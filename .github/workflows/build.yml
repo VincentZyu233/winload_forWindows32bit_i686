@@ -171,14 +171,14 @@ jobs:
             asset: winload-windows-x86_64-nonpcap.exe
             no_default_features: true
 
-          # ── Windows x86_64 (MinGW, XP-compatible, no Npcap) ──
+          # ── Windows x86_64 (MinGW, legacy Windows, no Npcap) ──
           - target: x86_64-pc-windows-gnu
             os: windows-latest
-            name: windows-x86_64-xp
+            name: windows-x86_64-legacy
             binary: winload.exe
-            asset: winload-windows-x86_64-xp.exe
+            asset: winload-windows-x86_64-legacy.exe
             mingw: true
-            xp: true
+            legacy: true
             no_default_features: true
 
           # ── Windows i686 (MSVC, without Npcap) ──
@@ -189,14 +189,14 @@ jobs:
             asset: winload-windows-i686-nonpcap.exe
             no_default_features: true
 
-          # ── Windows i686 (MinGW, XP-compatible, no Npcap) ──
+          # ── Windows i686 (MinGW, legacy Windows, no Npcap) ──
           - target: i686-pc-windows-gnu
             os: windows-latest
-            name: windows-i686-xp
+            name: windows-i686-legacy
             binary: winload.exe
-            asset: winload-windows-i686-xp.exe
+            asset: winload-windows-i686-legacy.exe
             mingw: true
-            xp: true
+            legacy: true
             no_default_features: true
 
           # ── Linux x64 (musl 静态链接, 兼容所有 Linux) ──
@@ -276,15 +276,11 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Setup MSYS2 (MinGW toolchain)
+      - name: Install MinGW-w64
         if: matrix.mingw
-        uses: msys2/setup-msys2@v2
+        uses: egor-tensin/setup-mingw@v2
         with:
-          msystem: MINGW64
-          update: true
-          install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-i686-gcc
+          platform: ${{ contains(matrix.target, 'i686') && 'i686' || 'x86_64' }}
 
       - name: Configure MinGW linker
         if: matrix.mingw
@@ -292,9 +288,6 @@ jobs:
         run: |
           $arch = if ("${{ matrix.target }}" -like "*i686*") { "i686" } else { "x86_64" }
           $upper = $arch.ToUpper()
-          # Add the matching MinGW arch bin dir to PATH
-          $mingwArch = if ("${{ matrix.target }}" -like "*i686*") { "mingw32" } else { "mingw64" }
-          echo "C:/msys64/$mingwArch/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           echo "CARGO_TARGET_${upper}_PC_WINDOWS_GNU_LINKER=${arch}-w64-mingw32-gcc" >> $env:GITHUB_ENV
           echo "CC_${arch}_pc_windows_gnu=${arch}-w64-mingw32-gcc" >> $env:GITHUB_ENV
           echo "AR_${arch}_pc_windows_gnu=${arch}-w64-mingw32-ar" >> $env:GITHUB_ENV
@@ -335,7 +328,7 @@ jobs:
 
       # Windows: 下载 Npcap SDK，pcap crate 链接 wpcap.lib 需要
       # 只在 MSVC + default-features (npcap) 构建时安装 (x86_64, aarch64)
-      # MinGW (XP) 和 --no-default-features (basic/nonpcap) 构建跳过
+      # MinGW (legacy) 和 --no-default-features (basic/nonpcap) 构建跳过
       - name: Install Npcap SDK
         if: runner.os == 'Windows' && !matrix.no_default_features
         shell: pwsh
@@ -369,8 +362,8 @@ jobs:
         run: |
           cargo install cargo-deb cargo-generate-rpm
 
-      - name: Set XP subsystem version
-        if: matrix.xp
+      - name: Set legacy subsystem version
+        if: matrix.legacy
         shell: bash
         run: |
           if [[ "${{ matrix.target }}" == *i686* ]]; then
