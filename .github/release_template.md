@@ -22,13 +22,13 @@ pip install winload==__PYPI_VER__
 # or with uv
 uv pip install winload==__PYPI_VER__
 ```
-> 📄 [PyPI](https://pypi.org/project/winload/__PYPI_VER__/)
+> 📄 [PyPI package](https://pypi.org/project/winload/__PYPI_VER__/)
 
 **npm (cross-platform):**
 ```bash
 npm install -g @vincentzyuapps/winload@__PLAIN_VER__
 ```
-> 📄 [npm](https://www.npmjs.com/package/@vincentzyuapps/winload/v/__PLAIN_VER__)
+> 📄 [npm package](https://www.npmjs.com/package/@vincentzyuapps/winload/v/__PLAIN_VER__)
 
 **Cargo (build from source):**
 ```bash
@@ -47,7 +47,7 @@ scoop install winload@__PLAIN_VER__
 ```bash
 paru -S winload-rust-bin
 ```
-> 📄 [winload-rust-bin](https://aur.archlinux.org/packages/winload-rust-bin)
+> 📄 [AUR package](https://aur.archlinux.org/packages/winload-rust-bin)
 
 **One-liner install for Linux (Debian/Ubuntu/RHEL/Fedora and derivatives):**
 ```bash
