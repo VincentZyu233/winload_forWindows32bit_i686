@@ -332,7 +332,7 @@ flowchart TB
 
 版本號自動從 `rust/Cargo.toml` (Rust) 或 `py/pyproject.toml` (Python) 中擷取，用於：
 - Release 標籤名（如 `v0.1.5`）
-- 產物檔名（如 `winload-windows-x86_64-v0.1.5.exe`）
+- 產物檔名（如 `winload-windows-x86_64-msvc-npcap-v0.1.5.exe`）
 - Scoop/AUR/npm/PyPI/crates.io 清單檔案中的版本欄位
 
 > **注意：** npm 套件的版本號同樣來自 `rust/Cargo.toml`。CI 中 `publish-npm` 任務會在發佈前將版本號動態注入 `package.json` —— 儲存庫中的 `0.0.0` 佔位符不會被發佈。

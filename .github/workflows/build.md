@@ -332,7 +332,7 @@ Runs **after `release` job succeeds** (parallel with Scoop/AUR/npm):
 
 The version is automatically extracted from `rust/Cargo.toml` (Rust) or `py/pyproject.toml` (Python) and used for:
 - Release tag name (e.g. `v0.1.5`)
-- Artifact filenames (e.g. `winload-windows-x86_64-v0.1.5.exe`)
+- Artifact filenames (e.g. `winload-windows-x86_64-msvc-npcap-v0.1.5.exe`)
 - Scoop/AUR/npm/PyPI/crates.io manifest version field
 
 > **Note:** The npm package version also comes from `rust/Cargo.toml`. During CI, the `publish-npm` job dynamically injects the version into `package.json` — the `0.0.0` placeholder in the repository is never published.

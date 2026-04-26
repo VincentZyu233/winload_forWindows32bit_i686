@@ -161,14 +161,14 @@ jobs:
             os: windows-latest
             name: windows-x86_64-msvc
             binary: winload.exe
-            asset: winload-windows-x86_64.exe
+            asset: winload-windows-x86_64-msvc-npcap.exe
 
           # ── Windows x86_64 (MSVC, without Npcap) ──
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             name: windows-x86_64-msvc-nonpcap
             binary: winload.exe
-            asset: winload-windows-x86_64-nonpcap.exe
+            asset: winload-windows-x86_64-msvc-nonpcap.exe
             no_default_features: true
 
           # ── Windows x86_64 (MinGW, no Npcap) ──
@@ -185,7 +185,7 @@ jobs:
             os: windows-latest
             name: windows-i686-msvc-nonpcap
             binary: winload.exe
-            asset: winload-windows-i686-nonpcap.exe
+            asset: winload-windows-i686-msvc-nonpcap.exe
             no_default_features: true
 
           # ── Windows i686 (MinGW, no Npcap) ──
@@ -218,14 +218,14 @@ jobs:
             os: windows-latest
             name: windows-aarch64-msvc
             binary: winload.exe
-            asset: winload-windows-aarch64.exe
+            asset: winload-windows-aarch64-msvc-npcap.exe
 
           # ── Windows ARM64 (MSVC, without Npcap) ──
           - target: aarch64-pc-windows-msvc
             os: windows-latest
             name: windows-aarch64-nonpcap
             binary: winload.exe
-            asset: winload-windows-aarch64-nonpcap.exe
+            asset: winload-windows-aarch64-msvc-nonpcap.exe
             no_default_features: true
 
           # ── Linux ARM64 (ubuntu-22.04 降低 GLIBC 要求) ──
@@ -451,7 +451,7 @@ jobs:
           
           # 在扩展名前插入版本号
           # winload-linux-x86_64 -> winload-linux-x86_64-v0.1.0
-          # winload-windows-x86_64.exe -> winload-windows-x86_64-v0.1.0.exe
+          # winload-windows-x86_64-msvc-npcap.exe -> winload-windows-x86_64-msvc-npcap-v0.1.0.exe
           if [[ "$ASSET_BASE" == *.* ]]; then
             # 有扩展名
             BASE_NAME="${ASSET_BASE%.*}"
@@ -601,12 +601,12 @@ jobs:
 
           # 下载 Windows x64
           curl -fSL -o winload-windows-x86_64.exe \
-            "${BASE_URL}/winload-windows-x86_64-${VERSION}.exe" \
+            "${BASE_URL}/winload-windows-x86_64-msvc-npcap-${VERSION}.exe" \
             || { echo "❌ Failed to download x64 binary"; exit 1; }
 
           # 下载 Windows ARM64
           curl -fSL -o winload-windows-aarch64.exe \
-            "${BASE_URL}/winload-windows-aarch64-${VERSION}.exe" \
+            "${BASE_URL}/winload-windows-aarch64-msvc-npcap-${VERSION}.exe" \
             || { echo "❌ Failed to download arm64 binary"; exit 1; }
 
           echo "✅ Downloaded:"
@@ -635,14 +635,14 @@ jobs:
               "license": "MIT",
               "architecture": {
                   "64bit": {
-                      "url": "${BASE_URL}/winload-windows-x86_64-${VERSION}.exe",
+                      "url": "${BASE_URL}/winload-windows-x86_64-msvc-npcap-${VERSION}.exe",
                       "hash": "${HASH_X64}",
-                      "bin": [["winload-windows-x86_64-${VERSION}.exe", "win-nload"]]
+                      "bin": [["winload-windows-x86_64-msvc-npcap-${VERSION}.exe", "win-nload"]]
                   },
                   "arm64": {
-                      "url": "${BASE_URL}/winload-windows-aarch64-${VERSION}.exe",
+                      "url": "${BASE_URL}/winload-windows-aarch64-msvc-npcap-${VERSION}.exe",
                       "hash": "${HASH_ARM64}",
-                      "bin": [["winload-windows-aarch64-${VERSION}.exe", "win-nload"]]
+                      "bin": [["winload-windows-aarch64-msvc-npcap-${VERSION}.exe", "win-nload"]]
                   }
               },
               "checkver": {
@@ -651,10 +651,10 @@ jobs:
               "autoupdate": {
                   "architecture": {
                       "64bit": {
-                          "url": "https://github.com/${REPO}/releases/download/v\$version/winload-windows-x86_64-v\$version.exe"
-                      },
-                      "arm64": {
-                          "url": "https://github.com/${REPO}/releases/download/v\$version/winload-windows-aarch64-v\$version.exe"
+                      "url": "https://github.com/${REPO}/releases/download/v\$version/winload-windows-x86_64-msvc-npcap-v\$version.exe"
+                  },
+                  "arm64": {
+                      "url": "https://github.com/${REPO}/releases/download/v\$version/winload-windows-aarch64-msvc-npcap-v\$version.exe"
                       }
                   }
               }
@@ -829,8 +829,8 @@ jobs:
           mkdir -p artifacts
           echo "📥 Downloading binaries for npm publish..."
 
-          curl -fSL -o artifacts/winload-windows-x86_64.exe   "${BASE_URL}/winload-windows-x86_64-${VERSION}.exe"
-          curl -fSL -o artifacts/winload-windows-aarch64.exe  "${BASE_URL}/winload-windows-aarch64-${VERSION}.exe"
+          curl -fSL -o artifacts/winload-windows-x86_64.exe   "${BASE_URL}/winload-windows-x86_64-msvc-npcap-${VERSION}.exe"
+          curl -fSL -o artifacts/winload-windows-aarch64.exe  "${BASE_URL}/winload-windows-aarch64-msvc-npcap-${VERSION}.exe"
           curl -fSL -o artifacts/winload-linux-x86_64         "${BASE_URL}/winload-linux-x86_64-${VERSION}"
           curl -fSL -o artifacts/winload-linux-aarch64        "${BASE_URL}/winload-linux-aarch64-${VERSION}"
           curl -fSL -o artifacts/winload-macos-x86_64         "${BASE_URL}/winload-macos-x86_64-${VERSION}"
