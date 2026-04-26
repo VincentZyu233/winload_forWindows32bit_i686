@@ -276,23 +276,25 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Install MinGW
+      - name: Setup MSYS2 (MinGW toolchain)
+        if: matrix.mingw
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-i686-gcc
+
+      - name: Configure MinGW linker
         if: matrix.mingw
         shell: pwsh
         run: |
-          choco install mingw --no-progress
-          # Add MinGW bin dir to PATH so cargo can find the linker
-          $mingwDir = "$env:ChocolateyInstall\lib\mingw\tools\install\mingw64\bin"
-          if (Test-Path $mingwDir) {
-            echo "$mingwDir" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          }
-          $target = "${{ matrix.target }}"
-          if ($target -like "*i686*") {
-            $arch = "i686"
-          } else {
-            $arch = "x86_64"
-          }
+          $arch = if ("${{ matrix.target }}" -like "*i686*") { "i686" } else { "x86_64" }
           $upper = $arch.ToUpper()
+          # Add the matching MinGW arch bin dir to PATH
+          $mingwArch = if ("${{ matrix.target }}" -like "*i686*") { "mingw32" } else { "mingw64" }
+          echo "C:/msys64/$mingwArch/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           echo "CARGO_TARGET_${upper}_PC_WINDOWS_GNU_LINKER=${arch}-w64-mingw32-gcc" >> $env:GITHUB_ENV
           echo "CC_${arch}_pc_windows_gnu=${arch}-w64-mingw32-gcc" >> $env:GITHUB_ENV
           echo "AR_${arch}_pc_windows_gnu=${arch}-w64-mingw32-ar" >> $env:GITHUB_ENV
