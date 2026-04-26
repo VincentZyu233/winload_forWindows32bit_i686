@@ -289,15 +289,16 @@ jobs:
           Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
           
           # 根据 target 选择正确的 lib 目录
+          # Npcap SDK 1.13: x86 在 Lib/, x64 在 Lib/x64/, ARM64 在 Lib/ARM64/
           $target = "${{ matrix.target }}"
           if ($target -like "*aarch64*") {
-            $arch = "ARM64"
+            $subDir = "ARM64"
           } elseif ($target -like "*i686*") {
-            $arch = "x86"
+            $subDir = ""    # x86 libs 直接在 Lib 根目录
           } else {
-            $arch = "x64"
+            $subDir = "x64"
           }
-          $libDir = "$extractPath\Lib\$arch"
+          $libDir = if ($subDir) { "$extractPath\Lib\$subDir" } else { "$extractPath\Lib" }
           Write-Host "📂 Npcap SDK lib dir ($arch): $libDir"
           Get-ChildItem $libDir
           

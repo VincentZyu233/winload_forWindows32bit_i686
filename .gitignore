@@ -206,6 +206,9 @@ local_config.*
 
 # 临时文件夹
 tmp/
+**/tmp/
+temp/
+**/temp/
 
 # npm
 .npmrc
