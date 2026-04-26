@@ -156,19 +156,48 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # ── Windows x64 (MSVC, native) ──
+          # ── Windows x86_64 (MSVC, with Npcap) ──
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             name: windows-x86_64
             binary: winload.exe
             asset: winload-windows-x86_64.exe
 
-          # ── Windows i686 (32-bit) ──
+          # ── Windows x86_64 (MSVC, without Npcap) ──
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            name: windows-x86_64-nonpcap
+            binary: winload.exe
+            asset: winload-windows-x86_64-nonpcap.exe
+            no_default_features: true
+
+          # ── Windows x86_64 (MinGW, XP-compatible, no Npcap) ──
+          - target: x86_64-pc-windows-gnu
+            os: windows-latest
+            name: windows-x86_64-xp
+            binary: winload.exe
+            asset: winload-windows-x86_64-xp.exe
+            mingw: true
+            xp: true
+            no_default_features: true
+
+          # ── Windows i686 (MSVC, without Npcap) ──
           - target: i686-pc-windows-msvc
             os: windows-latest
-            name: windows-i686
+            name: windows-i686-nonpcap
             binary: winload.exe
-            asset: winload-windows-i686.exe
+            asset: winload-windows-i686-nonpcap.exe
+            no_default_features: true
+
+          # ── Windows i686 (MinGW, XP-compatible, no Npcap) ──
+          - target: i686-pc-windows-gnu
+            os: windows-latest
+            name: windows-i686-xp
+            binary: winload.exe
+            asset: winload-windows-i686-xp.exe
+            mingw: true
+            xp: true
+            no_default_features: true
 
           # ── Linux x64 (musl 静态链接, 兼容所有 Linux) ──
           - target: x86_64-unknown-linux-musl
@@ -186,12 +215,20 @@ jobs:
             asset: winload-linux-i686
             cross_packages: gcc-multilib
 
-          # ── Windows ARM64 (cross-compile on x64 runner) ──
+          # ── Windows ARM64 (MSVC, with Npcap) ──
           - target: aarch64-pc-windows-msvc
             os: windows-latest
             name: windows-aarch64
             binary: winload.exe
             asset: winload-windows-aarch64.exe
+
+          # ── Windows ARM64 (MSVC, without Npcap) ──
+          - target: aarch64-pc-windows-msvc
+            os: windows-latest
+            name: windows-aarch64-nonpcap
+            binary: winload.exe
+            asset: winload-windows-aarch64-nonpcap.exe
+            no_default_features: true
 
           # ── Linux ARM64 (ubuntu-22.04 降低 GLIBC 要求) ──
           - target: aarch64-unknown-linux-gnu
@@ -239,6 +276,22 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: Install MinGW
+        if: matrix.mingw
+        shell: pwsh
+        run: |
+          choco install mingw --no-progress
+          $target = "${{ matrix.target }}"
+          if ($target -like "*i686*") {
+            $arch = "i686"
+          } else {
+            $arch = "x86_64"
+          }
+          $upper = $arch.ToUpper()
+          echo "CARGO_TARGET_${upper}_PC_WINDOWS_GNU_LINKER=${arch}-w64-mingw32-gcc" >> $env:GITHUB_ENV
+          echo "CC_${arch}_pc_windows_gnu=${arch}-w64-mingw32-gcc" >> $env:GITHUB_ENV
+          echo "AR_${arch}_pc_windows_gnu=${arch}-w64-mingw32-ar" >> $env:GITHUB_ENV
+
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
         with:
@@ -274,8 +327,10 @@ jobs:
           echo "✅ Android NDK configured for ${{ matrix.target }}"
 
       # Windows: 下载 Npcap SDK，pcap crate 链接 wpcap.lib 需要
-      - name: Install Npcap SDK (Windows only)
-        if: runner.os == 'Windows'
+      # 只在 MSVC + default-features (npcap) 构建时安装 (x86_64, aarch64)
+      # MinGW (XP) 和 --no-default-features (basic/nonpcap) 构建跳过
+      - name: Install Npcap SDK
+        if: runner.os == 'Windows' && !matrix.no_default_features
         shell: pwsh
         run: |
           $sdkUrl = "https://npcap.com/dist/npcap-sdk-1.13.zip"
@@ -289,17 +344,14 @@ jobs:
           Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
           
           # 根据 target 选择正确的 lib 目录
-          # Npcap SDK 1.13: x86 在 Lib/, x64 在 Lib/x64/, ARM64 在 Lib/ARM64/
+          # Npcap SDK 1.13: x64 在 Lib/x64/, ARM64 在 Lib/ARM64/
           $target = "${{ matrix.target }}"
           if ($target -like "*aarch64*") {
-            $subDir = "ARM64"
-          } elseif ($target -like "*i686*") {
-            $subDir = ""    # x86 libs 直接在 Lib 根目录
+            $libDir = "$extractPath\Lib\ARM64"
           } else {
-            $subDir = "x64"
+            $libDir = "$extractPath\Lib\x64"
           }
-          $libDir = if ($subDir) { "$extractPath\Lib\$subDir" } else { "$extractPath\Lib" }
-          Write-Host "📂 Npcap SDK lib dir ($arch): $libDir"
+          Write-Host "📂 Npcap SDK lib dir: $libDir"
           Get-ChildItem $libDir
           
           echo "LIB=$libDir;$env:LIB" >> $env:GITHUB_ENV
@@ -310,6 +362,16 @@ jobs:
         run: |
           cargo install cargo-deb cargo-generate-rpm
 
+      - name: Set XP subsystem version
+        if: matrix.xp
+        shell: bash
+        run: |
+          if [[ "${{ matrix.target }}" == *i686* ]]; then
+            echo "RUSTFLAGS=-C link-args=-Wl,--major-subsystem-version,5,--minor-subsystem-version,1" >> $GITHUB_ENV
+          else
+            echo "RUSTFLAGS=-C link-args=-Wl,--major-subsystem-version,5,--minor-subsystem-version,2" >> $GITHUB_ENV
+          fi
+
       - name: Build release binary
         shell: bash
         working-directory: rust
@@ -317,7 +379,8 @@ jobs:
           # 交叉编译时指定链接器 (仅 aarch64-linux-gnu 需要)
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: ${{ matrix.cross_linker || '' }}
         run: |
-          cargo build --release --target ${{ matrix.target }}
+          cargo build --release --target ${{ matrix.target }} \
+            ${{ matrix.no_default_features && '--no-default-features' || '' }}
 
           # 验证 Linux musl 产物是否真的是静态链接
           if [[ "${{ matrix.target }}" == *musl* ]]; then
@@ -982,18 +1045,20 @@ jobs:
           # JSON 安全转义 release body（处理换行、引号、反斜杠等）
           JSON_BODY=$(jq -R -s '.' < release_body.md)
           
+          CURL="curl -s -k --retry 3 --retry-delay 5 --retry-all-errors"
+          
           # 1. 确保 tag 存在于 Gitee
-          if curl -s --fail "https://gitee.com/api/v5/repos/${GITEE_OWNER}/${GITEE_REPO}/tags/${TAG}?access_token=${GITEE_TOKEN}" > /dev/null 2>&1; then
+          if $CURL --fail "https://gitee.com/api/v5/repos/${GITEE_OWNER}/${GITEE_REPO}/tags/${TAG}?access_token=${GITEE_TOKEN}" > /dev/null 2>&1; then
             echo "🏷️ Tag $TAG already exists on Gitee"
           else
             echo "🏷️ Creating tag $TAG on Gitee..."
-            curl -s -X POST --header 'Content-Type: application/json;charset=UTF-8' \
+            $CURL -X POST --header 'Content-Type: application/json;charset=UTF-8' \
               "https://gitee.com/api/v5/repos/${GITEE_OWNER}/${GITEE_REPO}/tags" \
               -d "{\"access_token\":\"${GITEE_TOKEN}\",\"tag_name\":\"${TAG}\",\"refs\":\"main\",\"tag_message\":\"Release ${TAG}\"}"
           fi
           
           # 2. 检查是否已有对应 tag 的 Release
-          EXISTING=$(curl -s "https://gitee.com/api/v5/repos/${GITEE_OWNER}/${GITEE_REPO}/releases/tags/${TAG}?access_token=${GITEE_TOKEN}")
+          EXISTING=$($CURL "https://gitee.com/api/v5/repos/${GITEE_OWNER}/${GITEE_REPO}/releases/tags/${TAG}?access_token=${GITEE_TOKEN}")
           RELEASE_ID=$(echo "$EXISTING" | jq -r '.id')
           
           if [ -n "$RELEASE_ID" ] && [ "$RELEASE_ID" != "null" ]; then
@@ -1017,7 +1082,7 @@ jobs:
                 prerelease: false
               }')
             
-            CREATE_RESPONSE=$(curl -s -X POST --header 'Content-Type: application/json;charset=UTF-8' \
+            CREATE_RESPONSE=$($CURL -X POST --header 'Content-Type: application/json;charset=UTF-8' \
               "https://gitee.com/api/v5/repos/${GITEE_OWNER}/${GITEE_REPO}/releases" \
               -d "$RELEASE_PAYLOAD")
             
@@ -1070,7 +1135,8 @@ jobs:
                 
                 START_TIME=$(date +%s)
                 HTTP_CODE_FILE=$(mktemp)
-                RESPONSE=$(curl -s --max-time 1200 --connect-timeout 30 \
+                RESPONSE=$(curl -s -k --retry 3 --retry-delay 10 --retry-all-errors \
+                  --max-time 1200 --connect-timeout 30 \
                   -w "\n%{http_code}" \
                   -X POST --header "Content-Type: multipart/form-data" \
                   -F "access_token=${GITEE_TOKEN}" \

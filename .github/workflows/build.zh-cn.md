@@ -91,8 +91,13 @@ git commit -m "feat: add dark mode support"
 
 | 平台 | 架构 | Target | 说明 |
 |------|:---:|--------|------|
-| Windows | x64 | `x86_64-pc-windows-msvc` | 在 Windows x64 runner 上用原生 MSVC 编译，主要用于一般 Windows 桌面（桌面市场主流） |
-| Windows | ARM64 | `aarch64-pc-windows-msvc` | 在 Windows x64 runner 上用 MSVC 交叉编译，主要用于 ARM Windows 设备（高通骁龙 X Elite/Plus 笔记本、Surface Pro X 等） |
+| Windows | x64 (npcap) | `x86_64-pc-windows-msvc` | 带 Npcap 抓包支持，原生 MSVC 编译，Windows 7+ |
+| Windows | x64 (basic) | `x86_64-pc-windows-msvc` | 无 Npcap 独立二进制 (`--no-default-features`)，MSVC，Windows 7+ |
+| Windows | x64 (XP) | `x86_64-pc-windows-gnu` | MinGW-w64 编译，兼容旧版 Windows XP/Vista/7+ |
+| Windows | ARM64 (npcap) | `aarch64-pc-windows-msvc` | 带 Npcap 抓包，MSVC 交叉编译，Windows 7+（骁龙 X / Surface Pro X） |
+| Windows | ARM64 (basic) | `aarch64-pc-windows-msvc` | 无 Npcap 独立二进制 (`--no-default-features`)，MSVC，Windows 7+ |
+| Windows | x86 (i686 basic) | `i686-pc-windows-msvc` | 32位 MSVC 独立二进制，无 Npcap，Windows 7+ |
+| Windows | x86 (i686 XP) | `i686-pc-windows-gnu` | 32位 MinGW-w64，兼容旧版 Windows XP/Vista/7+ |
 | Linux | x64 | `x86_64-unknown-linux-musl` | 在 Ubuntu runner 上用 musl 静态链接编译，主要用于所有 x64 Linux 发行版（大部分云服务器） |
 | Linux | ARM64 | `aarch64-unknown-linux-gnu` | 在 ubuntu-22.04 上用 gcc-aarch64 交叉编译，主要用于 ARM64 服务器 / 单片机（树莓派等） |
 | macOS | x64 | `x86_64-apple-darwin` | 在 Apple Silicon runner 上通过 Rosetta 编译，主要用于 Intel Mac（2020 年及更早的老款 Mac） |
