@@ -1,11 +1,17 @@
 #!/bin/bash
-# winload installer — supports apt (deb) and dnf (rpm) on x86_64 / aarch64
+# winload installer — supports apt (deb) / dnf (rpm) / Termux on x86_64 / aarch64
 # Usage: curl -fsSL https://raw.githubusercontent.com/VincentZyuApps/winload/main/docs/install_scripts/install.sh | bash
 # Install specific version: WINLOAD_VERSION=v0.1.7-rc.10 bash -c "$(curl -fsSL https://...)"
 set -e
 
 REPO="VincentZyuApps/winload"
 API_URL="https://api.github.com/repos/${REPO}/releases/latest"
+
+# ── Detect Termux ──────────────────────────────────────────
+IS_TERMUX=false
+if [ -n "${PREFIX:-}" ] && [ -d "${PREFIX}/bin" ]; then
+  IS_TERMUX=true
+fi
 
 # ── Detect architecture ──────────────────────────────────
 ARCH=$(uname -m)
@@ -26,18 +32,19 @@ case "$ARCH" in
 esac
 
 # ── Detect package manager ───────────────────────────────
-if command -v apt-get >/dev/null 2>&1; then
+if $IS_TERMUX; then
+  PKG_MGR="termux"
+elif command -v apt-get >/dev/null 2>&1; then
   PKG_MGR="apt"
 elif command -v dnf >/dev/null 2>&1; then
   PKG_MGR="dnf"
 else
   echo "❌ Unsupported package manager."
-  echo "   This installer only supports apt (Debian/Ubuntu) and dnf (Fedora/RHEL)."
-  echo "   Alternatives:"
-  echo "   • npm (cross-platform): npm install -g @vincentzyuapps/winload"
-  echo "     https://www.npmjs.com/package/@vincentzyuapps/winload"
-  echo "   • Manual download: https://github.com/${REPO}/releases"
-  echo "   • Build from source: https://github.com/${REPO}"
+  echo "   This installer only supports apt (Debian/Ubuntu), dnf (Fedora/RHEL), and Termux."
+  echo ""
+  echo "   For other platforms, download the binary manually:"
+  echo "   • https://github.com/${REPO}/releases"
+  echo "   • Build from source: cargo install winload"
   exit 1
 fi
 
@@ -50,7 +57,7 @@ if command -v pacman >/dev/null 2>&1; then
   echo ""
 fi
 
-echo "🔍 Detected: arch=$ARCH pkg_mgr=$PKG_MGR"
+echo "🔍 Detected: arch=$ARCH pkg_mgr=$PKG_MGR${IS_TERMUX:+ termux=true}"
 
 # ── Fetch release version ─────────────────────────────────
 if [ -n "${WINLOAD_VERSION:-}" ]; then
@@ -68,17 +75,24 @@ fi
 
 # ── Download & Install ───────────────────────────────────
 BASE_URL="https://github.com/${REPO}/releases/download/${VERSION}"
-PLATFORM="linux-${ARCH_NAME}"
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-if [ "$PKG_MGR" = "apt" ]; then
+if [ "$PKG_MGR" = "termux" ]; then
+  ANDROID_ASSET="winload-android-${ARCH_NAME}-${VERSION}"
+  echo "📥 Downloading ${ANDROID_ASSET}..."
+  curl -fSL -o "${TMP_DIR}/winload" "${BASE_URL}/${ANDROID_ASSET}"
+  echo "📦 Installing to ${PREFIX}/bin/..."
+  install -Dm755 "${TMP_DIR}/winload" "${PREFIX}/bin/winload"
+elif [ "$PKG_MGR" = "apt" ]; then
+  PLATFORM="linux-${ARCH_NAME}"
   PKG_FILE="winload-${PLATFORM}-${VERSION}.deb"
   echo "📥 Downloading ${PKG_FILE}..."
   curl -fSL -o "${TMP_DIR}/${PKG_FILE}" "${BASE_URL}/${PKG_FILE}"
   echo "📦 Installing via apt..."
   sudo dpkg -i "${TMP_DIR}/${PKG_FILE}" || sudo apt-get install -f -y
 elif [ "$PKG_MGR" = "dnf" ]; then
+  PLATFORM="linux-${ARCH_NAME}"
   PKG_FILE="winload-${PLATFORM}-${VERSION}.rpm"
   echo "📥 Downloading ${PKG_FILE}..."
   curl -fSL -o "${TMP_DIR}/${PKG_FILE}" "${BASE_URL}/${PKG_FILE}"
@@ -91,7 +105,9 @@ echo "✅ winload installed successfully!"
 echo "   Run 'winload' to start monitoring."
 echo ""
 echo "   To uninstall:"
-if [ "$PKG_MGR" = "apt" ]; then
+if [ "$PKG_MGR" = "termux" ]; then
+  echo "   rm ${PREFIX}/bin/winload"
+elif [ "$PKG_MGR" = "apt" ]; then
   echo "   sudo apt remove winload"
 elif [ "$PKG_MGR" = "dnf" ]; then
   echo "   sudo dnf remove winload"

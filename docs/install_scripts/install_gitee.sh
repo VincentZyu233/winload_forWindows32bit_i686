@@ -1,6 +1,6 @@
 #!/bin/bash
 # winload installer (Gitee 镜像) — 适用于中国大陆用户，解决 GitHub 下载慢的问题
-# 支持 apt (deb) 和 dnf (rpm)，架构 x86_64 / aarch64
+# 支持 apt (deb) / dnf (rpm) / Termux，架构 x86_64 / aarch64
 #
 # 用法:
 #   curl -fsSL https://gitee.com/vincent-zyu/winload/raw/main/docs/install_scripts/install_gitee.sh | bash
@@ -12,6 +12,12 @@ set -e
 OWNER="vincent-zyu"
 REPO="winload"
 API_URL="https://gitee.com/api/v5/repos/${OWNER}/${REPO}/releases/latest"
+
+# ── 检测 Termux ──────────────────────────────────────────
+IS_TERMUX=false
+if [ -n "${PREFIX:-}" ] && [ -d "${PREFIX}/bin" ]; then
+  IS_TERMUX=true
+fi
 
 # ── 检测架构 ─────────────────────────────────────────────
 ARCH=$(uname -m)
@@ -30,19 +36,20 @@ case "$ARCH" in
     ;;
 esac
 
-# ── 检测包管理器 ─────────────────────────────────────────
-if command -v apt-get >/dev/null 2>&1; then
+# ── 检测包管理器 ──────────────────────────────────────────
+if $IS_TERMUX; then
+  PKG_MGR="termux"
+elif command -v apt-get >/dev/null 2>&1; then
   PKG_MGR="apt"
 elif command -v dnf >/dev/null 2>&1; then
   PKG_MGR="dnf"
 else
   echo "❌ 不支持的包管理器。"
-  echo "   本安装脚本仅支持 apt (Debian/Ubuntu) 和 dnf (Fedora/RHEL)。"
+  echo "   本安装脚本仅支持 apt (Debian/Ubuntu)、dnf (Fedora/RHEL) 和 Termux。"
   echo ""
   echo "   其他安装方式:"
-  echo "   • npm (跨平台): npm install -g @vincentzyuapps/winload"
   echo "   • 手动下载: https://gitee.com/${OWNER}/${REPO}/releases"
-  echo "   • 从源码构建: https://gitee.com/${OWNER}/${REPO}"
+  echo "   • 从源码构建: cargo install winload"
   exit 1
 fi
 
@@ -55,7 +62,7 @@ if command -v pacman >/dev/null 2>&1; then
   echo ""
 fi
 
-echo "🔍 检测到: 架构=$ARCH 包管理器=$PKG_MGR"
+echo "🔍 检测到: 架构=$ARCH 包管理器=$PKG_MGR${IS_TERMUX:+ termux=true}"
 
 # ── 获取版本号 ────────────────────────────────────────────
 if [ -n "${WINLOAD_VERSION:-}" ]; then
@@ -75,17 +82,24 @@ fi
 
 # ── 下载并安装 ────────────────────────────────────────────
 BASE_URL="https://gitee.com/${OWNER}/${REPO}/releases/download/${VERSION}"
-PLATFORM="linux-${ARCH_NAME}"
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-if [ "$PKG_MGR" = "apt" ]; then
+if [ "$PKG_MGR" = "termux" ]; then
+  ANDROID_ASSET="winload-android-${ARCH_NAME}-${VERSION}"
+  echo "📥 正在从 Gitee 下载 ${ANDROID_ASSET}..."
+  curl -fSL -o "${TMP_DIR}/winload" "${BASE_URL}/${ANDROID_ASSET}"
+  echo "📦 安装到 ${PREFIX}/bin/ ..."
+  install -Dm755 "${TMP_DIR}/winload" "${PREFIX}/bin/winload"
+elif [ "$PKG_MGR" = "apt" ]; then
+  PLATFORM="linux-${ARCH_NAME}"
   PKG_FILE="winload-${PLATFORM}-${VERSION}.deb"
   echo "📥 正在从 Gitee 下载 ${PKG_FILE}..."
   curl -fSL -o "${TMP_DIR}/${PKG_FILE}" "${BASE_URL}/${PKG_FILE}"
   echo "📦 通过 apt 安装中..."
   sudo dpkg -i "${TMP_DIR}/${PKG_FILE}" || sudo apt-get install -f -y
 elif [ "$PKG_MGR" = "dnf" ]; then
+  PLATFORM="linux-${ARCH_NAME}"
   PKG_FILE="winload-${PLATFORM}-${VERSION}.rpm"
   echo "📥 正在从 Gitee 下载 ${PKG_FILE}..."
   curl -fSL -o "${TMP_DIR}/${PKG_FILE}" "${BASE_URL}/${PKG_FILE}"
@@ -98,7 +112,9 @@ echo "✅ winload 安装成功!"
 echo "   运行 'winload' 开始监控网络流量。"
 echo ""
 echo "   卸载方式:"
-if [ "$PKG_MGR" = "apt" ]; then
+if [ "$PKG_MGR" = "termux" ]; then
+  echo "   rm ${PREFIX}/bin/winload"
+elif [ "$PKG_MGR" = "apt" ]; then
   echo "   sudo apt remove winload"
 elif [ "$PKG_MGR" = "dnf" ]; then
   echo "   sudo dnf remove winload"

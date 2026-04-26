@@ -6,13 +6,13 @@
 
 ### ⬇️ Downloads
 
-> **i686 (32-bit)**: Npcap SDK 1.13 的 32 位库文件位于 `Lib/` 根目录（非 `Lib/x86`），`--npcap` 功能完整可用。不提供 DEB/RPM 包，也不推送到 npm / Scoop / AUR 源。
+> **i686 (32-bit)**: Linux binary only — no DEB/RPM packages. Windows & Linux binaries are not published to npm / Scoop / AUR.
 
 | Arch | Windows | Linux | macOS | Android |
 |------|---------|-------|-------|---------|
 | **x86_64** | [![exe](https://img.shields.io/badge/exe-x64-0078D6.svg?logo=windows)](__BASE_URL__/winload-windows-x86_64-__VERSION__.exe) | [![binary](https://img.shields.io/badge/binary-x64-E95420.svg?logo=linux)](__BASE_URL__/winload-linux-x86_64-__VERSION__) · [![deb](https://img.shields.io/badge/deb-x64-D70A53.svg?logo=debian)](__BASE_URL__/winload-linux-x86_64-__VERSION__.deb) · [![rpm](https://img.shields.io/badge/rpm-x64-F1B42F.svg?logo=redhat)](__BASE_URL__/winload-linux-x86_64-__VERSION__.rpm) | [![binary](https://img.shields.io/badge/binary-Intel-000000.svg?logo=apple)](__BASE_URL__/winload-macos-x86_64-__VERSION__) | [![binary](https://img.shields.io/badge/binary-x64-96ed89.svg?logo=android)](__BASE_URL__/winload-android-x86_64-__VERSION__) |
 | **ARM64** | [![exe](https://img.shields.io/badge/exe-ARM64-0078D6.svg?logo=windows)](__BASE_URL__/winload-windows-aarch64-__VERSION__.exe) | [![binary](https://img.shields.io/badge/binary-ARM64-E95420.svg?logo=linux)](__BASE_URL__/winload-linux-aarch64-__VERSION__) · [![deb](https://img.shields.io/badge/deb-ARM64-D70A53.svg?logo=debian)](__BASE_URL__/winload-linux-aarch64-__VERSION__.deb) · [![rpm](https://img.shields.io/badge/rpm-ARM64-F1B42F.svg?logo=redhat)](__BASE_URL__/winload-linux-aarch64-__VERSION__.rpm) | [![binary](https://img.shields.io/badge/binary-Apple_Silicon-000000.svg?logo=apple)](__BASE_URL__/winload-macos-aarch64-__VERSION__) | [![binary](https://img.shields.io/badge/binary-ARM64-168039.svg?logo=android)](__BASE_URL__/winload-android-aarch64-__VERSION__) |
-| **i686 (32-bit)** | [![exe](https://img.shields.io/badge/exe-i686-0078D6.svg?logo=windows)](__BASE_URL__/winload-windows-i686-__VERSION__.exe) | [![binary](https://img.shields.io/badge/binary-i686-E95420.svg?logo=linux)](__BASE_URL__/winload-linux-i686-__VERSION__) | — | — |
+| **i686 (32-bit)** | [![exe](https://img.shields.io/badge/exe-i686-0078D6.svg?logo=windows)](__BASE_URL__/winload-windows-i686-__VERSION__.exe) | [![binary](https://img.shields.io/badge/binary-i686-E95420.svg?logo=linux)](__BASE_URL__/winload-linux-i686-__VERSION__) | *Not provided* | *Not provided* |
 
 ### 📥 Quick Install
 
