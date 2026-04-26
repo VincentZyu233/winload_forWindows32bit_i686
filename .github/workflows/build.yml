@@ -279,7 +279,8 @@ jobs:
         shell: pwsh
         run: |
           $arch = if ("${{ matrix.target }}" -like "*i686*") { "i686" } else { "x86_64" }
-          $url = "https://github.com/niXman/mingw-builds-binaries/releases/download/15.2.0-rt_v13-rev0/${arch}-15.2.0-release-posix-dwarf-ucrt-rt_v13-rev0.7z"
+          $eh = if ($arch -eq "i686") { "dwarf" } else { "seh" }
+          $url = "https://github.com/niXman/mingw-builds-binaries/releases/download/15.2.0-rt_v13-rev0/${arch}-15.2.0-release-posix-${eh}-ucrt-rt_v13-rev0.7z"
           $out = "$env:RUNNER_TEMP\mingw.7z"
           $extractDir = "$env:RUNNER_TEMP\mingw"
 
