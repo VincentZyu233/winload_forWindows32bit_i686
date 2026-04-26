@@ -51,6 +51,7 @@ pub enum LoopbackMode {
 #[cfg(target_os = "windows")]
 pub mod platform {
     use super::*;
+    #[cfg(feature = "npcap")]
     use std::thread;
 
     /// Check if wpcap.dll (Npcap) is available on this system.
