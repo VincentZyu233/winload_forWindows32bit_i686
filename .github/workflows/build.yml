@@ -159,14 +159,14 @@ jobs:
           # ── Windows x86_64 (MSVC, with Npcap) ──
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-            name: windows-x86_64
+            name: windows-x86_64-msvc
             binary: winload.exe
             asset: winload-windows-x86_64.exe
 
           # ── Windows x86_64 (MSVC, without Npcap) ──
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-            name: windows-x86_64-nonpcap
+            name: windows-x86_64-msvc-nonpcap
             binary: winload.exe
             asset: winload-windows-x86_64-nonpcap.exe
             no_default_features: true
@@ -183,7 +183,7 @@ jobs:
           # ── Windows i686 (MSVC, without Npcap) ──
           - target: i686-pc-windows-msvc
             os: windows-latest
-            name: windows-i686-nonpcap
+            name: windows-i686-msvc-nonpcap
             binary: winload.exe
             asset: winload-windows-i686-nonpcap.exe
             no_default_features: true
@@ -216,7 +216,7 @@ jobs:
           # ── Windows ARM64 (MSVC, with Npcap) ──
           - target: aarch64-pc-windows-msvc
             os: windows-latest
-            name: windows-aarch64
+            name: windows-aarch64-msvc
             binary: winload.exe
             asset: winload-windows-aarch64.exe
 
@@ -276,9 +276,23 @@ jobs:
 
       - name: Install MinGW-w64
         if: matrix.mingw
-        uses: egor-tensin/setup-mingw@v2
-        with:
-          platform: ${{ contains(matrix.target, 'i686') && 'i686' || 'x86_64' }}
+        shell: pwsh
+        run: |
+          $arch = if ("${{ matrix.target }}" -like "*i686*") { "i686" } else { "x86_64" }
+          $url = "https://github.com/niXman/mingw-builds-binaries/releases/download/15.2.0-rt_v13-rev0/${arch}-15.2.0-release-posix-dwarf-ucrt-rt_v13-rev0.7z"
+          $out = "$env:RUNNER_TEMP\mingw.7z"
+          $extractDir = "$env:RUNNER_TEMP\mingw"
+
+          Write-Host "Downloading MinGW ${arch}..."
+          Invoke-WebRequest -Uri $url -OutFile $out
+
+          Write-Host "Extracting..."
+          7z x $out -o"$extractDir" -y | Out-Null
+
+          $mingwDir = (Get-ChildItem -Path $extractDir -Directory | Select-Object -First 1).FullName
+          $binPath = Join-Path $mingwDir "bin"
+          Write-Host "Adding to PATH: $binPath"
+          echo "$binPath" | Out-File -Append $env:GITHUB_PATH
 
       - name: Configure MinGW linker
         if: matrix.mingw
