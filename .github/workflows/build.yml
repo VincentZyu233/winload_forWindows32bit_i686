@@ -171,14 +171,13 @@ jobs:
             asset: winload-windows-x86_64-nonpcap.exe
             no_default_features: true
 
-          # ── Windows x86_64 (MinGW, legacy Windows, no Npcap) ──
+          # ── Windows x86_64 (MinGW, no Npcap) ──
           - target: x86_64-pc-windows-gnu
             os: windows-latest
-            name: windows-x86_64-legacy
+            name: windows-x86_64-mingw
             binary: winload.exe
-            asset: winload-windows-x86_64-legacy.exe
+            asset: winload-windows-x86_64-mingw.exe
             mingw: true
-            legacy: true
             no_default_features: true
 
           # ── Windows i686 (MSVC, without Npcap) ──
@@ -189,14 +188,13 @@ jobs:
             asset: winload-windows-i686-nonpcap.exe
             no_default_features: true
 
-          # ── Windows i686 (MinGW, legacy Windows, no Npcap) ──
+          # ── Windows i686 (MinGW, no Npcap) ──
           - target: i686-pc-windows-gnu
             os: windows-latest
-            name: windows-i686-legacy
+            name: windows-i686-mingw
             binary: winload.exe
-            asset: winload-windows-i686-legacy.exe
+            asset: winload-windows-i686-mingw.exe
             mingw: true
-            legacy: true
             no_default_features: true
 
           # ── Linux x64 (musl 静态链接, 兼容所有 Linux) ──
@@ -328,7 +326,7 @@ jobs:
 
       # Windows: 下载 Npcap SDK，pcap crate 链接 wpcap.lib 需要
       # 只在 MSVC + default-features (npcap) 构建时安装 (x86_64, aarch64)
-      # MinGW (legacy) 和 --no-default-features (basic/nonpcap) 构建跳过
+      # MinGW 和 --no-default-features (basic/nonpcap) 构建跳过
       - name: Install Npcap SDK
         if: runner.os == 'Windows' && !matrix.no_default_features
         shell: pwsh
@@ -362,8 +360,8 @@ jobs:
         run: |
           cargo install cargo-deb cargo-generate-rpm
 
-      - name: Set legacy subsystem version
-        if: matrix.legacy
+      - name: Set MinGW subsystem version
+        if: matrix.mingw
         shell: bash
         run: |
           if [[ "${{ matrix.target }}" == *i686* ]]; then
