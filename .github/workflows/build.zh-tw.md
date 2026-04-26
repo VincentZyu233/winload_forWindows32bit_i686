@@ -91,12 +91,12 @@ git commit -m "feat: add dark mode support"
 
 | 平台 | 架構 | Target | 說明 |
 |------|:---:|--------|------|
-| Windows | x64 (npcap) | `x86_64-pc-windows-msvc` | 含 Npcap 抓包支援，原生 MSVC 編譯，Windows 7+ |
-| Windows | x64 (basic) | `x86_64-pc-windows-msvc` | 無 Npcap 獨立二進位 (`--no-default-features`)，MSVC，Windows 7+ |
+| Windows | x64 (MSVC, npcap) | `x86_64-pc-windows-msvc` | 含 Npcap 抓包支援，原生 MSVC 編譯，Windows 7+ |
+| Windows | x64 (MSVC, no-npcap) | `x86_64-pc-windows-msvc` | 無 Npcap 獨立二進位 (`--no-default-features`)，MSVC，Windows 7+ |
 | Windows | x64 (MinGW) | `x86_64-pc-windows-gnu` | MinGW-w64 編譯，相容舊版 Windows XP/Vista/7+ |
-| Windows | ARM64 (npcap) | `aarch64-pc-windows-msvc` | 含 Npcap 抓包，MSVC 交叉編譯，Windows 7+（驍龍 X / Surface Pro X） |
-| Windows | ARM64 (basic) | `aarch64-pc-windows-msvc` | 無 Npcap 獨立二進位 (`--no-default-features`)，MSVC，Windows 7+ |
-| Windows | x86 (i686 basic) | `i686-pc-windows-msvc` | 32位元 MSVC 獨立二進位，無 Npcap，Windows 7+ |
+| Windows | ARM64 (MSVC, npcap) | `aarch64-pc-windows-msvc` | 含 Npcap 抓包，MSVC 交叉編譯，Windows 7+（驍龍 X / Surface Pro X） |
+| Windows | ARM64 (MSVC, no-npcap) | `aarch64-pc-windows-msvc` | 無 Npcap 獨立二進位 (`--no-default-features`)，MSVC，Windows 7+ |
+| Windows | x86 (MSVC, no-npcap) | `i686-pc-windows-msvc` | 32位元 MSVC 獨立二進位，無 Npcap，Windows 7+ |
 | Windows | x86 (i686 MinGW) | `i686-pc-windows-gnu` | 32位元 MinGW-w64，相容舊版 Windows XP/Vista/7+ |
 | Linux | x64 | `x86_64-unknown-linux-musl` | 在 Ubuntu runner 上用 musl 靜態連結編譯，主要用於所有 x64 Linux 發行版（大部分雲端伺服器） |
 | Linux | ARM64 | `aarch64-unknown-linux-gnu` | 在 ubuntu-22.04 上用 gcc-aarch64 交叉編譯，主要用於 ARM64 伺服器 / 單板機（樹莓派等） |

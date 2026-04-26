@@ -341,7 +341,7 @@ jobs:
 
       # Windows: 下载 Npcap SDK，pcap crate 链接 wpcap.lib 需要
       # 只在 MSVC + default-features (npcap) 构建时安装 (x86_64, aarch64)
-      # MinGW 和 --no-default-features (basic/nonpcap) 构建跳过
+      # MinGW 和 --no-default-features (no-npcap) 构建跳过
       - name: Install Npcap SDK
         if: runner.os == 'Windows' && !matrix.no_default_features
         shell: pwsh
