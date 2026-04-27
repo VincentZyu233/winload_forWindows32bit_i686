@@ -324,8 +324,8 @@ jobs:
         run: |
           # Try multiple musl mirrors until one works
           MUSL_MIRRORS=(
+            "https://github.com/VincentZyuApps/winload/releases/download/i686-linux-musl-cross.tgz/i686-linux-musl-cross.tgz"
             "https://more.musl.cc/11/x86_64-linux-musl/i686-linux-musl-cross.tgz"
-            "https://github.com/GollyG4/winuplibc/releases/download/musl-cross/i686-linux-musl-cross.tgz"
           )
           USE_GLIBC_FALLBACK=false
           
