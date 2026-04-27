@@ -11,4 +11,12 @@ fn main() {
         println!("cargo:rustc-link-lib=delayimp");
         println!("cargo:rustc-link-arg=/DELAYLOAD:wpcap.dll");
     }
+
+    // MinGW XP compat shim: provide GetFileInformationByHandleEx at link time
+    // to avoid Vista+ PE import table entries. Falls back to GetProcAddress at runtime.
+    if target.contains("windows-gnu") {
+        cc::Build::new()
+            .file("src/xp_shim.c")
+            .compile("xp_shim");
+    }
 }

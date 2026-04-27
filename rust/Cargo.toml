@@ -1,6 +1,6 @@
 [package]
 name = "winload"
-version = "0.1.8-rc.8"
+version = "0.1.8-rc.9"
 edition = "2021"
 description = "Network Load Monitor — nload-like TUI tool for Windows/Linux/macOS"
 license = "MIT"
@@ -22,6 +22,9 @@ pcap = { version = "2", optional = true }
 [features]
 default = ["npcap"]
 npcap = ["pcap"]
+
+[build-dependencies]
+cc = "1"
 
 [profile.release]
 opt-level = 3
