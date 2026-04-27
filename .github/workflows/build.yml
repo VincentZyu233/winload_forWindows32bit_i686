@@ -322,31 +322,31 @@ jobs:
       - name: Setup i686 musl cross-toolchain
         if: matrix.target == 'i686-unknown-linux-musl'
         run: |
-          # Try to download from primary source first
-          if curl -fsSL --retry 3 --retry-delay 10 --connect-timeout 30 \
-            https://more.musl.cc/11/x86_64-linux-musl/i686-linux-musl-cross.tgz \
-            -o /tmp/musl-cross.tgz; then
-            echo "✅ Downloaded musl cross compiler from more.musl.cc"
-            tar xzf /tmp/musl-cross.tgz -C /tmp
-            GCC_PATH=$(find /tmp/i686-linux-musl-cross -name 'i686-linux-musl-gcc' -type f 2>/dev/null | head -1)
-            if [ -n "$GCC_PATH" ]; then
-              echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_LINKER=$GCC_PATH" >> $GITHUB_ENV
-              echo "✅ Using musl cross compiler: $GCC_PATH"
-            else
-              echo "❌ musl cross compiler extraction failed. Switching to glibc..."
-              MUSL_DOWNLOAD_FAILED=true
-            fi
-          else
-            echo "❌ musl download failed (timeout or network error). Switching to glibc..."
-            MUSL_DOWNLOAD_FAILED=true
-          fi
+          # Try multiple musl mirrors until one works
+          MUSL_MIRRORS=(
+            "https://more.musl.cc/11/x86_64-linux-musl/i686-linux-musl-cross.tgz"
+            "https://github.com/GollyG4/winuplibc/releases/download/musl-cross/i686-linux-musl-cross.tgz"
+          )
+          USE_GLIBC_FALLBACK=false
           
-          # Fallback: use glibc build with ubuntu-22.04 (Debian 12 compatible)
-          if [ "$MUSL_DOWNLOAD_FAILED" = "true" ] || [ -z "$GCC_PATH" ]; then
-            echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_LINKER=gcc" >> $GITHUB_ENV
-            echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_RUSTFLAGS=-C link-args=-m32" >> $GITHUB_ENV
-            echo "📦 Using glibc fallback (gcc + -m32)"
-          fi
+          for mirror in "${MUSL_MIRRORS[@]}"; do
+            echo "📥 Trying mirror: $mirror"
+            if curl -fsSL --retry 2 --retry-delay 5 --connect-timeout 20 "$mirror" -o /tmp/musl-cross.tgz 2>&1; then
+              echo "✅ Downloaded from $mirror"
+              tar xzf /tmp/musl-cross.tgz -C /tmp
+              GCC_PATH=$(find /tmp/i686-linux-musl-cross -name 'i686-linux-musl-gcc' -type f 2>/dev/null | head -1)
+              if [ -n "$GCC_PATH" ]; then
+                echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_LINKER=$GCC_PATH" >> $GITHUB_ENV
+                echo "✅ Using musl: $GCC_PATH"
+                exit 0
+              fi
+            fi
+            echo "❌ Failed, trying next mirror..."
+          done
+          
+          # All mirrors failed - skip this build instead of using incompatible glibc
+          echo "⚠️ All musl mirrors failed, skipping i686 Linux build..."
+          echo "I686_MUSL_SKIP=true" >> $GITHUB_ENV
 
       # Android: 配置 NDK 交叉编译工具链 (Termux 最低 API 24 = Android 7.0)
       - name: Setup Android NDK
@@ -416,6 +416,7 @@ jobs:
           fi
 
       - name: Build release binary
+        if: matrix.target != 'i686-unknown-linux-musl' || !env.I686_MUSL_SKIP
         shell: bash
         working-directory: rust
         env:
@@ -432,9 +433,9 @@ jobs:
             ldd target/${{ matrix.target }}/release/${{ matrix.binary }} 2>&1 || echo "✅ Statically linked (no dynamic dependencies)"
           fi
 
-      # Linux targets: 额外构建 DEB + RPM 包 (排除 Android, 排除 i686)
+      # Linux targets: 额外构建 DEB + RPM 包 (排除 Android, 排除 i686, 排除 musl 下载失败的情况)
       - name: Build DEB & RPM packages
-        if: contains(matrix.target, 'linux') && !contains(matrix.target, 'android') && !contains(matrix.target, 'i686')
+        if: contains(matrix.target, 'linux') && !contains(matrix.target, 'android') && !contains(matrix.target, 'i686') && (matrix.target != 'i686-unknown-linux-musl' || !env.I686_MUSL_SKIP)
         shell: bash
         working-directory: rust
         run: |
@@ -460,14 +461,14 @@ jobs:
           ls -lh renamed/
 
       - name: Upload DEB artifact
-        if: contains(matrix.target, 'linux') && !contains(matrix.target, 'android') && !contains(matrix.target, 'i686')
+        if: contains(matrix.target, 'linux') && !contains(matrix.target, 'android') && !contains(matrix.target, 'i686') && (matrix.target != 'i686-unknown-linux-musl' || !env.I686_MUSL_SKIP)
         uses: actions/upload-artifact@v4
         with:
           name: winload-${{ matrix.name }}-${{ needs.check.outputs.version }}.deb
           path: rust/renamed/*.deb
 
       - name: Upload RPM artifact
-        if: contains(matrix.target, 'linux') && !contains(matrix.target, 'android') && !contains(matrix.target, 'i686')
+        if: contains(matrix.target, 'linux') && !contains(matrix.target, 'android') && !contains(matrix.target, 'i686') && (matrix.target != 'i686-unknown-linux-musl' || !env.I686_MUSL_SKIP)
         uses: actions/upload-artifact@v4
         with:
           name: winload-${{ matrix.name }}-${{ needs.check.outputs.version }}.rpm
