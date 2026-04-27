@@ -1,4 +1,20 @@
-#include <windows.h>
+#define WINAPI __stdcall
+#define FALSE 0
+#define TRUE 1
+#define ERROR_INVALID_FUNCTION 1
+
+typedef int BOOL;
+typedef void *HANDLE;
+typedef void *HMODULE;
+typedef unsigned long DWORD;
+typedef void *LPVOID;
+typedef char CHAR;
+typedef wchar_t WCHAR;
+typedef int (*FARPROC)();
+
+__declspec(dllimport) HMODULE WINAPI GetModuleHandleW(const WCHAR *);
+__declspec(dllimport) FARPROC WINAPI GetProcAddress(HMODULE, const char *);
+__declspec(dllimport) void WINAPI SetLastError(DWORD);
 
 BOOL WINAPI GetFileInformationByHandleEx(
     HANDLE hFile,
@@ -6,10 +22,10 @@ BOOL WINAPI GetFileInformationByHandleEx(
     LPVOID lpFileInformation,
     DWORD dwBufferSize
 ) {
+    typedef BOOL (WINAPI *RealFunc)(HANDLE, DWORD, LPVOID, DWORD);
     HMODULE hKernel32 = GetModuleHandleW(L"kernel32.dll");
     if (hKernel32) {
-        typedef BOOL (WINAPI *RealFunc)(HANDLE, DWORD, LPVOID, DWORD);
-        RealFunc real = (RealFunc)GetProcAddress(hKernel32, "GetFileInformationByHandleEx");
+        RealFunc real = (RealFunc)(void *)GetProcAddress(hKernel32, "GetFileInformationByHandleEx");
         if (real)
             return real(hFile, FileInformationClass, lpFileInformation, dwBufferSize);
     }
