@@ -30,6 +30,8 @@ fn main() {
             .expect("failed to compile xp_shim.c");
         assert!(status.success(), "xp_shim.c compilation failed");
 
+        // Allow overriding the winapi import library definition
+        println!("cargo:rustc-link-arg=-Wl,--allow-multiple-definition");
         println!("cargo:rustc-link-arg={}", obj);
     }
 }

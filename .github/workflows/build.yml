@@ -316,13 +316,27 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ${{ matrix.cross_packages }}
 
-      # i686 musl: download pre-built cross-compiler for static linking
+      # i686 musl: install system musl + gcc-multilib for static linking
       # (no GLIBC dependency — runs on ANY Linux, including old distros)
       - name: Setup i686 musl cross-toolchain
         if: matrix.target == 'i686-unknown-linux-musl'
         run: |
-          curl -sL https://musl.cc/i686-linux-musl-cross.tgz | tar xz -C /tmp
-          echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_LINKER=/tmp/i686-linux-musl-cross/bin/i686-linux-musl-gcc" >> $GITHUB_ENV
+          sudo dpkg --add-architecture i386
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq musl-tools gcc-multilib musl-dev:i386
+          # Find installed 32-bit musl library path
+          MUSL_DIR=$(dpkg -L musl-dev:i386 2>/dev/null | grep 'crt1.o' | xargs dirname)
+          echo "musl i386 dir: $MUSL_DIR"
+          # Create i686 musl specs and wrapper from the x86_64 template
+          sudo sed \
+            -e "s|x86_64-linux-musl|i386-linux-musl|g" \
+            -e "s|ld-musl-x86_64|ld-musl-i386|g" \
+            /usr/lib/x86_64-linux-musl/musl-gcc.specs \
+            | sudo tee "$MUSL_DIR/musl-gcc.specs" > /dev/null
+          echo '#!/bin/sh' > /tmp/i686-musl-gcc
+          echo "exec gcc -m32 -specs $MUSL_DIR/musl-gcc.specs \"\$@\"" >> /tmp/i686-musl-gcc
+          chmod +x /tmp/i686-musl-gcc
+          echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_LINKER=/tmp/i686-musl-gcc" >> $GITHUB_ENV
 
       # Android: 配置 NDK 交叉编译工具链 (Termux 最低 API 24 = Android 7.0)
       - name: Setup Android NDK

@@ -27,32 +27,32 @@ pip install winload==__PYPI_VER__
 # or with uv
 uv pip install winload==__PYPI_VER__
 ```
-> 📄 [PyPI package](https://pypi.org/project/winload/__PYPI_VER__/)
+> 📄 [PyPI Package](https://pypi.org/project/winload/__PYPI_VER__/)
 
 **npm (cross-platform):**
 ```bash
 npm install -g @vincentzyuapps/winload@__PLAIN_VER__
 ```
-> 📄 [npm package](https://www.npmjs.com/package/@vincentzyuapps/winload/v/__PLAIN_VER__)
+> 📄 [Npm Package](https://www.npmjs.com/package/@vincentzyuapps/winload/v/__PLAIN_VER__)
 
 **Cargo (build from source):**
 ```bash
 cargo install winload@__PLAIN_VER__
 ```
-> 📄 [crates.io](https://crates.io/crates/winload/__PLAIN_VER__)
+> 📄 [Crates.io](https://crates.io/crates/winload/__PLAIN_VER__)
 
 **Windows (Scoop):**
 ```powershell
 scoop bucket add vincentzyu https://github.com/VincentZyuApps/scoop-bucket
 scoop install winload@__PLAIN_VER__
 ```
-> 📄 [Scoop bucket](https://github.com/VincentZyuApps/scoop-bucket)
+> 📄 [Scoop Bucket](https://github.com/VincentZyuApps/scoop-bucket)
 
 **Arch Linux (AUR):**
 ```bash
 paru -S winload-rust-bin
 ```
-> 📄 [AUR package](https://aur.archlinux.org/packages/winload-rust-bin)
+> 📄 [AUR Package](https://aur.archlinux.org/packages/winload-rust-bin)
 
 **One-liner install for Linux (Debian/Ubuntu/RHEL/Fedora and derivatives):**
 ```bash
