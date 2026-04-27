@@ -174,9 +174,9 @@ jobs:
           # ── Windows x86_64 (MinGW, no Npcap) ──
           - target: x86_64-pc-windows-gnu
             os: windows-latest
-            name: windows-x86_64-mingw
+            name: windows-x86_64-mingw-nonpcap
             binary: winload.exe
-            asset: winload-windows-x86_64-mingw.exe
+            asset: winload-windows-x86_64-mingw-nonpcap.exe
             mingw: true
             no_default_features: true
 
@@ -191,9 +191,9 @@ jobs:
           # ── Windows i686 (MinGW, no Npcap) ──
           - target: i686-pc-windows-gnu
             os: windows-latest
-            name: windows-i686-mingw
+            name: windows-i686-mingw-nonpcap
             binary: winload.exe
-            asset: winload-windows-i686-mingw.exe
+            asset: winload-windows-i686-mingw-nonpcap.exe
             mingw: true
             no_default_features: true
 
@@ -302,7 +302,6 @@ jobs:
           $upper = $arch.ToUpper()
           echo "CARGO_TARGET_${upper}_PC_WINDOWS_GNU_LINKER=${arch}-w64-mingw32-gcc" >> $env:GITHUB_ENV
           echo "CC_${arch}_pc_windows_gnu=${arch}-w64-mingw32-gcc" >> $env:GITHUB_ENV
-          echo "AR_${arch}_pc_windows_gnu=${arch}-w64-mingw32-ar" >> $env:GITHUB_ENV
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2

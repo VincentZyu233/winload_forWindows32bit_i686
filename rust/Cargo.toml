@@ -23,9 +23,6 @@ pcap = { version = "2", optional = true }
 default = ["npcap"]
 npcap = ["pcap"]
 
-[build-dependencies]
-cc = "1"
-
 [profile.release]
 opt-level = 3
 lto = true
