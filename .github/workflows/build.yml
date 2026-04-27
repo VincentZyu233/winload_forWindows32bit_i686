@@ -322,22 +322,30 @@ jobs:
       - name: Setup i686 musl cross-toolchain
         if: matrix.target == 'i686-unknown-linux-musl'
         run: |
-          curl -fsSL --retry 3 --retry-delay 10 --connect-timeout 30 \
+          # Try to download from primary source first
+          if curl -fsSL --retry 3 --retry-delay 10 --connect-timeout 30 \
             https://more.musl.cc/11/x86_64-linux-musl/i686-linux-musl-cross.tgz \
-            -o /tmp/musl-cross.tgz
-          tar xzf /tmp/musl-cross.tgz -C /tmp
-          echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_LINKER=/tmp/i686-linux-musl-cross/bin/i686-linux-musl-gcc" >> $GITHUB_ENV
-          GCC_PATH=$(find /tmp/i686-linux-musl-cross -name 'i686-linux-musl-gcc' -type f 2>/dev/null | head -1)
-          if [ -z "$GCC_PATH" ]; then
-            echo "❌ musl download failed. Switching to glibc build with ubuntu-22.04..."
-            # Fallback: use ubuntu-22.04 with glibc (Debian 12 compatible)
-            sudo apt-get update -qq
-            sudo apt-get install -y -qq gcc-multilib
+            -o /tmp/musl-cross.tgz; then
+            echo "✅ Downloaded musl cross compiler from more.musl.cc"
+            tar xzf /tmp/musl-cross.tgz -C /tmp
+            GCC_PATH=$(find /tmp/i686-linux-musl-cross -name 'i686-linux-musl-gcc' -type f 2>/dev/null | head -1)
+            if [ -n "$GCC_PATH" ]; then
+              echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_LINKER=$GCC_PATH" >> $GITHUB_ENV
+              echo "✅ Using musl cross compiler: $GCC_PATH"
+            else
+              echo "❌ musl cross compiler extraction failed. Switching to glibc..."
+              MUSL_DOWNLOAD_FAILED=true
+            fi
+          else
+            echo "❌ musl download failed (timeout or network error). Switching to glibc..."
+            MUSL_DOWNLOAD_FAILED=true
+          fi
+          
+          # Fallback: use glibc build with ubuntu-22.04 (Debian 12 compatible)
+          if [ "$MUSL_DOWNLOAD_FAILED" = "true" ] || [ -z "$GCC_PATH" ]; then
             echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_LINKER=gcc" >> $GITHUB_ENV
             echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_RUSTFLAGS=-C link-args=-m32" >> $GITHUB_ENV
-          else
-            echo "Found musl gcc: $GCC_PATH"
-            echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_LINKER=$GCC_PATH" >> $GITHUB_ENV
+            echo "📦 Using glibc fallback (gcc + -m32)"
           fi
 
       # Android: 配置 NDK 交叉编译工具链 (Termux 最低 API 24 = Android 7.0)
