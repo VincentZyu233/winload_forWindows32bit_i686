@@ -9,10 +9,9 @@ typedef void *HMODULE;
 typedef unsigned long DWORD;
 typedef void *LPVOID;
 typedef char CHAR;
-typedef wchar_t WCHAR;
 typedef int (*FARPROC)();
 
-__declspec(dllimport) HMODULE WINAPI GetModuleHandleW(const WCHAR *);
+__declspec(dllimport) HMODULE WINAPI GetModuleHandleA(const char *);
 __declspec(dllimport) FARPROC WINAPI GetProcAddress(HMODULE, const char *);
 __declspec(dllimport) void WINAPI SetLastError(DWORD);
 
@@ -23,7 +22,7 @@ BOOL WINAPI GetFileInformationByHandleEx(
     DWORD dwBufferSize
 ) {
     typedef BOOL (WINAPI *RealFunc)(HANDLE, DWORD, LPVOID, DWORD);
-    HMODULE hKernel32 = GetModuleHandleW(L"kernel32.dll");
+    HMODULE hKernel32 = GetModuleHandleA("kernel32.dll");
     if (hKernel32) {
         RealFunc real = (RealFunc)(void *)GetProcAddress(hKernel32, "GetFileInformationByHandleEx");
         if (real)

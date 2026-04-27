@@ -322,8 +322,8 @@ jobs:
       - name: Setup i686 musl cross-toolchain
         if: matrix.target == 'i686-unknown-linux-musl'
         run: |
-          curl -sL https://musl.cc/i686-linux-musl-cross.tgz | sudo tar xz -C /opt
-          echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_LINKER=/opt/i686-linux-musl-cross/bin/i686-linux-musl-gcc" >> $GITHUB_ENV
+          curl -sL https://musl.cc/i686-linux-musl-cross.tgz | tar xz -C /tmp
+          echo "CARGO_TARGET_I686_UNKNOWN_LINUX_MUSL_LINKER=/tmp/i686-linux-musl-cross/bin/i686-linux-musl-gcc" >> $GITHUB_ENV
 
       # Android: 配置 NDK 交叉编译工具链 (Termux 最低 API 24 = Android 7.0)
       - name: Setup Android NDK
