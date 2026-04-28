@@ -883,7 +883,7 @@ jobs:
             end
 
             def install
-              bin.install "winload"
+              bin.install Dir["winload-*"].first => "winload"
             end
 
             test do
@@ -987,7 +987,7 @@ jobs:
             end
 
             def install
-              bin.install "winload"
+              bin.install Dir["winload-*"].first => "winload"
             end
 
             test do

@@ -48,7 +48,7 @@ scoop install winload@__PLAIN_VER__
 ```
 > 📄 [Scoop Bucket](https://github.com/VincentZyuApps/scoop-bucket)
 
-**🇨🇳 Windows (Scoop) — Gitee mirror:**
+**🇨🇳 Windows (Scoop) — 码云镜像 Gitee mirror:**
 ```powershell
 scoop bucket add vincentzyu https://gitee.com/vincent-zyu/scoop-bucket
 scoop install winload@__PLAIN_VER__
@@ -62,7 +62,7 @@ paru -S winload-rust-bin
 ```
 > 📄 [AUR Package](https://aur.archlinux.org/packages/winload-rust-bin)
 
-**One-liner install for Linux (Debian/Ubuntu/RHEL/Fedora and derivatives):**
+**One-liner install For Linux (Debian/Ubuntu/RHEL/Fedora and derivatives):**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/__REPO__/main/docs/install_scripts/install.sh | bash
 # or install this specific version:
@@ -70,7 +70,7 @@ WINLOAD_VERSION=__VERSION__ bash -c "$(curl -fsSL https://raw.githubusercontent.
 ```
 > 📄 [View install script source](https://github.com/__REPO__/blob/main/docs/install_scripts/install.sh)
 
-**🇨🇳 码云的镜像 Gitee mirror (中国大陆地区更快捏，faster in China):**
+**🇨🇳 一键安装脚本在码云的镜像 One-liner install for Linux On Gitee mirror (中国大陆地区更快捏，faster in China):**
 ```bash
 curl -fsSL https://gitee.com/vincent-zyu/winload/raw/main/docs/install_scripts/install_gitee.sh | bash
 # or install this specific version:
@@ -89,7 +89,7 @@ brew install winload@__PLAIN_VER__
 ```
 > 📄 [Homebrew Formula (GitHub)](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 
-**🇨🇳 Homebrew — Gitee mirror (manual tap clone):**
+**🇨🇳 Homebrew — 码云镜像 Gitee mirror (手动克隆tap仓库，manual tap clone):**
 ```bash
 git clone https://gitee.com/vincent-zyu/homebrew-tap.git "$(brew --prefix)/Library/Taps/vincentzyuapps/homebrew-tap"
 brew install winload@__PLAIN_VER__
