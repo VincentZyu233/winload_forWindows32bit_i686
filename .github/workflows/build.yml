@@ -798,7 +798,7 @@ jobs:
         run: |
           VERSION="${{ needs.check.outputs.version }}"
 
-          git clone https://x-access-token:${GITEE_TOKEN}@gitee.com/vincent-zyu/scoop-bucket.git scoop-repo
+          git clone https://vincent-zyu:${GITEE_TOKEN}@gitee.com/vincent-zyu/scoop-bucket.git scoop-repo
           cp winload.json scoop-repo/bucket/winload.json
 
           cd scoop-repo
@@ -1008,7 +1008,7 @@ jobs:
         run: |
           VERSION="${{ needs.check.outputs.version }}"
 
-          git clone https://x-access-token:${GITEE_TOKEN}@gitee.com/vincent-zyu/homebrew-tap.git brew-repo
+          git clone https://vincent-zyu:${GITEE_TOKEN}@gitee.com/vincent-zyu/homebrew-tap.git brew-repo
           cp Formula/winload.rb brew-repo/Formula/winload.rb
 
           cd brew-repo
