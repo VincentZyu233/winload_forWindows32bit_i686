@@ -26,6 +26,7 @@
 [![AUR](https://img.shields.io/badge/AUR-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/winload-rust-bin)
 [![APT](https://img.shields.io/badge/APT-E95420?style=for-the-badge&logo=debian&logoColor=white)](https://github.com/VincentZyuApps/winload/releases)
 [![RPM](https://img.shields.io/badge/RPM-CB1626?style=for-the-badge&logo=redhat&logoColor=white)](https://github.com/VincentZyuApps/winload/releases)
+[![Homebrew](https://img.shields.io/badge/Homebrew-FBB040?style=for-the-badge&logo=homebrew&logoColor=black)](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 
 > **[📖 Build Docs](.github/workflows/build.md)**
 
@@ -108,6 +109,8 @@ cargo install --list
 ### Windows (Scoop)
 ```powershell
 scoop bucket add vincentzyu https://github.com/VincentZyuApps/scoop-bucket
+# or from Gitee:
+# scoop bucket add vincentzyu https://gitee.com/vincent-zyu/scoop-bucket
 scoop install winload
 # execute bin file
 win-nload
@@ -143,6 +146,16 @@ curl -fsSL https://gitee.com/vincent-zyu/winload/raw/main/docs/install_scripts/i
 which winload
 ```
 > 📄 [View Gitee install script](https://gitee.com/vincent-zyu/winload/blob/main/docs/install_scripts/install_gitee.sh)
+
+### macOS / Linux (Homebrew)
+```bash
+brew tap vincentzyuapps/tap
+# or from Gitee (manual tap clone):
+# git clone https://gitee.com/vincent-zyu/homebrew-tap.git "$(brew --prefix)/Library/Taps/vincentzyuapps/homebrew-tap"
+brew install winload
+which winload
+```
+> 📄 [View Homebrew formula](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 
 > ⚠️ These install scripts only support systems with **apt or dnf** package managers on **x86_64 / aarch64** architectures. For other platforms, use **npm** (`npm install -g @vincentzyuapps/winload`) or **Cargo** (`cargo install winload`) instead.
 

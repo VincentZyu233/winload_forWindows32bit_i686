@@ -716,33 +716,29 @@ jobs:
   # ── 更新 Scoop Bucket (Gitee) ──────────────────────────────
   # 生成指向 Gitee Releases 的 scoop manifest，推送到 Gitee
   publish-scoop-gitee:
-    name: 【码云】Update Scoop Bucket
+    name: 【Gitee码云】Update Scoop Bucket
     needs: [check, release]
     if: always() && needs.check.outputs.should_publish == 'true' && (needs.release.result == 'success' || needs.release.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch latest release info from Gitee
-        env:
-          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+      - name: Download Windows binaries from GitHub Releases (for hash)
         run: |
           VERSION="${{ needs.check.outputs.version }}"
-          GITEE_REPO="vincent-zyu/winload"
-          GITEE_BASE_URL="https://gitee.com/vincent-zyu/winload/releases/download/${VERSION}"
+          REPO="${{ github.repository }}"
+          BASE_URL="https://github.com/${REPO}/releases/download/${VERSION}"
 
           echo "📦 Target version: ${VERSION}"
-          echo "📥 Downloading Windows binaries from Gitee release..."
+          echo "📥 Downloading Windows binaries from GitHub release..."
 
-          # 下载 Windows x64
           curl -fSL -o winload-windows-x86_64.exe \
-            "${GITEE_BASE_URL}/winload-windows-x86_64-msvc-npcap-${VERSION}.exe" \
-            || { echo "❌ Failed to download x64 binary from Gitee"; exit 1; }
+            "${BASE_URL}/winload-windows-x86_64-msvc-npcap-${VERSION}.exe" \
+            || { echo "❌ Failed to download x64 binary"; exit 1; }
 
-          # 下载 Windows ARM64
           curl -fSL -o winload-windows-aarch64.exe \
-            "${GITEE_BASE_URL}/winload-windows-aarch64-msvc-npcap-${VERSION}.exe" \
-            || { echo "❌ Failed to download arm64 binary from Gitee"; exit 1; }
+            "${BASE_URL}/winload-windows-aarch64-msvc-npcap-${VERSION}.exe" \
+            || { echo "❌ Failed to download arm64 binary"; exit 1; }
 
-          echo "✅ Downloaded from Gitee:"
+          echo "✅ Downloaded:"
           ls -lh winload-windows-*.exe
 
       - name: Generate Gitee Scoop manifest
@@ -857,6 +853,7 @@ jobs:
           REPO="${{ github.repository }}"
           BASE_URL="https://github.com/${REPO}/releases/download/${VERSION}"
 
+          mkdir -p Formula
           # 计算各平台 SHA256
           SHA_LINUX_X64=$(sha256sum winload-linux-x86_64 2>/dev/null | awk '{print $1}' || echo "")
           SHA_LINUX_ARM64=$(sha256sum winload-linux-aarch64 2>/dev/null | awk '{print $1}' || echo "")
@@ -922,7 +919,7 @@ jobs:
   # ── 更新 Homebrew Tap (Gitee) ─────────────────────────────
   # 生成指向 Gitee Releases 的 homebrew formula，推送到 Gitee homebrew-tap
   publish-homebrew-gitee:
-    name: 【码云】Update Homebrew Tap
+    name: 【Gitee码云】Update Homebrew Tap
     needs: [check, release]
     if: always() && needs.check.outputs.should_publish == 'true' && (needs.release.result == 'success' || needs.release.result == 'skipped')
     runs-on: ubuntu-latest
@@ -960,6 +957,7 @@ jobs:
           TAGVER="${VERSION#v}"
           GITEE_BASE_URL="https://gitee.com/vincent-zyu/winload/releases/download/${VERSION}"
 
+          mkdir -p Formula
           # 计算各平台 SHA256
           SHA_LINUX_X64=$(sha256sum winload-linux-x86_64 2>/dev/null | awk '{print $1}' || echo "")
           SHA_LINUX_ARM64=$(sha256sum winload-linux-aarch64 2>/dev/null | awk '{print $1}' || echo "")

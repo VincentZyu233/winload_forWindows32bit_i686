@@ -26,6 +26,7 @@
 [![AUR](https://img.shields.io/badge/AUR-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/winload-rust-bin)
 [![APT](https://img.shields.io/badge/APT-E95420?style=for-the-badge&logo=debian&logoColor=white)](https://github.com/VincentZyuApps/winload/releases)
 [![RPM](https://img.shields.io/badge/RPM-CB1626?style=for-the-badge&logo=redhat&logoColor=white)](https://github.com/VincentZyuApps/winload/releases)
+[![Homebrew](https://img.shields.io/badge/Homebrew-FBB040?style=for-the-badge&logo=homebrew&logoColor=black)](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 
 > **[📖 빌드 문서](.github/workflows/build.md)**
 
@@ -108,6 +109,8 @@ cargo install --list
 ### Windows (Scoop 이용)
 ```powershell
 scoop bucket add vincentzyu https://github.com/VincentZyuApps/scoop-bucket
+# 또는 Gitee에서：
+# scoop bucket add vincentzyu https://gitee.com/vincent-zyu/scoop-bucket
 scoop install winload
 # 바이너리 파일 실행
 win-nload
@@ -143,6 +146,16 @@ curl -fsSL https://gitee.com/vincent-zyu/winload/raw/main/docs/install_scripts/i
 which winload
 ```
 > 📄 [Gitee 설치 스크립트 소스 보기](https://gitee.com/vincent-zyu/winload/blob/main/docs/install_scripts/install_gitee.sh)
+
+### macOS / Linux（Homebrew）
+```bash
+brew tap vincentzyuapps/tap
+# 또는 Gitee에서（수동 탭 클론）：
+# git clone https://gitee.com/vincent-zyu/homebrew-tap.git "$(brew --prefix)/Library/Taps/vincentzyuapps/homebrew-tap"
+brew install winload
+which winload
+```
+> 📄 [Homebrew 포뮬러 보기](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 
 > ⚠️ 이 설치 스크립트는 **apt 또는 dnf** 패키지 관리자를 사용하는 **x86_64 / aarch64** 아키텍처 시스템에서만 지원됩니다. 다른 플랫폼에서는 **npm**(`npm install -g @vincentzyuapps/winload`) 또는 **Cargo**(`cargo install winload`)를 사용하세요.
 

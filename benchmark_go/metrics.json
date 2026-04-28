@@ -1,17 +1,17 @@
 {
   "binary_size": {
     "nload (C++)": 141344,
-    "winload (Rust)": 1254784,
-    "winload (Py)": 987802
+    "winload (Rust)": 1269232,
+    "winload (Py)": 1005314
   },
   "memory_rss": {
     "nload (C++)": 3968,
-    "winload (Rust)": 3328,
-    "winload (Py)": 19416
+    "winload (Rust)": 3200,
+    "winload (Py)": 21248
   },
   "cpu_usage": {
-    "nload (C++)": 0.75,
+    "nload (C++)": 0.85,
     "winload (Rust)": 0.00,
-    "winload (Py)": 30.00
+    "winload (Py)": 100.00
   }
 }

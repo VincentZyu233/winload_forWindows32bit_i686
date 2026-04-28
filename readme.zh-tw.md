@@ -26,6 +26,7 @@
 [![AUR](https://img.shields.io/badge/AUR-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)](https://aur.archlinux.org/packages/winload-rust-bin)
 [![APT](https://img.shields.io/badge/APT-E95420?style=for-the-badge&logo=debian&logoColor=white)](https://github.com/VincentZyuApps/winload/releases)
 [![RPM](https://img.shields.io/badge/RPM-CB1626?style=for-the-badge&logo=redhat&logoColor=white)](https://github.com/VincentZyuApps/winload/releases)
+[![Homebrew](https://img.shields.io/badge/Homebrew-FBB040?style=for-the-badge&logo=homebrew&logoColor=black)](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 
 > **[📖 建置文檔](.github/workflows/build.zh-tw.md)**
 
@@ -108,6 +109,8 @@ cargo install --list
 ### Windows (Scoop)
 ```powershell
 scoop bucket add vincentzyu https://github.com/VincentZyuApps/scoop-bucket
+# 或從 Gitee 克隆：
+# scoop bucket add vincentzyu https://gitee.com/vincent-zyu/scoop-bucket
 scoop install winload
 # 執行二進位檔案
 win-nload
@@ -143,6 +146,16 @@ curl -fsSL https://gitee.com/vincent-zyu/winload/raw/main/docs/install_scripts/i
 which winload
 ```
 > 📄 [查看 Gitee 安裝指令稿原始碼](https://gitee.com/vincent-zyu/winload/blob/main/docs/install_scripts/install_gitee.sh)
+
+### macOS / Linux（Homebrew）
+```bash
+brew tap vincentzyuapps/tap
+# 或從 Gitee（手動克隆 tap）：
+# git clone https://gitee.com/vincent-zyu/homebrew-tap.git "$(brew --prefix)/Library/Taps/vincentzyuapps/homebrew-tap"
+brew install winload
+which winload
+```
+> 📄 [查看 Homebrew 配方](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 
 > ⚠️ 以上安裝指令稿僅適用於使用 **apt 或 dnf** 套件管理器的 **x86_64 / aarch64** 架構系統。其他平台請使用 **npm**（`npm install -g @vincentzyuapps/winload`）或 **Cargo**（`cargo install winload`）安裝。
 
