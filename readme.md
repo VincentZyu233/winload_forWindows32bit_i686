@@ -123,6 +123,7 @@ where win-nload # CMD
 > scoop install windows-terminal-preview
 > wtp
 > ```
+> 💡 Scoop provides only **MSVC + Npcap** builds for **x86_64** and **ARM64**. For other variants (MinGW, non-Npcap) or older Windows (7/Vista/8), download manually from [GitHub Releases](https://github.com/VincentZyuApps/winload/releases).
 
 ### Arch Linux (AUR):
 ```bash
@@ -156,6 +157,7 @@ brew install winload
 which winload
 ```
 > 📄 [View Homebrew formula](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
+> 💡 Homebrew supports **macOS** (Intel & Apple Silicon) and **Linux** (x86_64 & ARM64).
 
 > ⚠️ These install scripts only support systems with **apt or dnf** package managers on **x86_64 / aarch64** architectures. For other platforms, use **npm** (`npm install -g @vincentzyuapps/winload`) or **Cargo** (`cargo install winload`) instead.
 

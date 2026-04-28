@@ -48,6 +48,14 @@ scoop install winload@__PLAIN_VER__
 ```
 > 📄 [Scoop Bucket](https://github.com/VincentZyuApps/scoop-bucket)
 
+**🇨🇳 Windows (Scoop) — Gitee mirror:**
+```powershell
+scoop bucket add vincentzyu https://gitee.com/vincent-zyu/scoop-bucket
+scoop install winload@__PLAIN_VER__
+```
+> 📄 [Gitee Scoop Bucket](https://gitee.com/vincent-zyu/scoop-bucket)
+> 💡 Scoop provides only **MSVC + Npcap** builds for **x86_64** and **ARM64** (Windows 7+). For other variants (MinGW, non-Npcap) or older Windows, download from the table above.
+
 **Arch Linux (AUR):**
 ```bash
 paru -S winload-rust-bin
@@ -62,7 +70,7 @@ WINLOAD_VERSION=__VERSION__ bash -c "$(curl -fsSL https://raw.githubusercontent.
 ```
 > 📄 [View install script source](https://github.com/__REPO__/blob/main/docs/install_scripts/install.sh)
 
-**🇨🇳 Gitee mirror (faster in China):**
+**🇨🇳 码云的镜像 Gitee mirror (中国大陆地区更快捏，faster in China):**
 ```bash
 curl -fsSL https://gitee.com/vincent-zyu/winload/raw/main/docs/install_scripts/install_gitee.sh | bash
 # or install this specific version:
@@ -73,3 +81,18 @@ WINLOAD_VERSION=__VERSION__ bash -c "$(curl -fsSL https://gitee.com/vincent-zyu/
 > ⚠️ These two `.sh` install scripts only support systems with **apt or dnf** on **x86_64 / aarch64**. For other platforms, use **npm** or **Cargo**.
 >
 > ⚠️ 以上两个`.sh`安装脚本仅适用于使用 **apt 或 dnf** 的 **x86_64 / aarch64** 系统。其他平台请使用 **npm** 或 **Cargo** 安装.
+
+**macOS / Linux (Homebrew):**
+```bash
+brew tap vincentzyuapps/tap
+brew install winload@__PLAIN_VER__
+```
+> 📄 [Homebrew Formula (GitHub)](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
+
+**🇨🇳 Homebrew — Gitee mirror (manual tap clone):**
+```bash
+git clone https://gitee.com/vincent-zyu/homebrew-tap.git "$(brew --prefix)/Library/Taps/vincentzyuapps/homebrew-tap"
+brew install winload@__PLAIN_VER__
+```
+> 📄 [Homebrew Formula (Gitee)](https://gitee.com/vincent-zyu/homebrew-tap/blob/main/Formula/winload.rb)
+> 💡 Homebrew supports **macOS** (Intel & Apple Silicon) and **Linux** (x86_64 & ARM64).

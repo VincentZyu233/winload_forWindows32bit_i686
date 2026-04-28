@@ -123,6 +123,7 @@ where win-nload # CMD
 > scoop install windows-terminal-preview
 > wtp
 > ```
+> 💡 Scoop은 **x86_64** 및 **ARM64**용 **MSVC + Npcap** 빌드만 제공합니다. 다른 변형(MinGW, Npcap 미포함) 또는 구형 Windows(7/Vista/8)의 경우 [GitHub Releases](https://github.com/VincentZyuApps/winload/releases)에서 직접 다운로드하세요.
 
 ### Arch Linux (AUR):
 ```bash
@@ -156,6 +157,7 @@ brew install winload
 which winload
 ```
 > 📄 [Homebrew 포뮬러 보기](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
+> 💡 Homebrew는 **macOS**(Intel 및 Apple Silicon)와 **Linux**(x86_64 및 ARM64)를 지원합니다.
 
 > ⚠️ 이 설치 스크립트는 **apt 또는 dnf** 패키지 관리자를 사용하는 **x86_64 / aarch64** 아키텍처 시스템에서만 지원됩니다. 다른 플랫폼에서는 **npm**(`npm install -g @vincentzyuapps/winload`) 또는 **Cargo**(`cargo install winload`)를 사용하세요.
 

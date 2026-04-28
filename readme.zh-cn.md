@@ -123,6 +123,7 @@ where win-nload # CMD
 > scoop install windows-terminal-preview
 > wtp
 > ```
+> 💡 Scoop 仅提供 **x86_64** 和 **ARM64** 的 **MSVC + Npcap** 构建。如需其他变体（MinGW、无 Npcap）或旧版 Windows（7/Vista/8），请从 [GitHub Releases](https://github.com/VincentZyuApps/winload/releases) 手动下载。
 
 ### Arch Linux (AUR):
 ```bash
@@ -156,6 +157,7 @@ brew install winload
 which winload
 ```
 > 📄 [查看 Homebrew 配方](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
+> 💡 Homebrew 支持 **macOS**（Intel 和 Apple Silicon）和 **Linux**（x86_64 和 ARM64）。
 
 > ⚠️ 以上安装脚本仅适用于使用 **apt 或 dnf** 包管理器的 **x86_64 / aarch64** 架构系统。其他平台请使用 **npm**（`npm install -g @vincentzyuapps/winload`）或 **Cargo**（`cargo install winload`）安装。
 
