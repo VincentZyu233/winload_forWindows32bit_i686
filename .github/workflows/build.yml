@@ -166,34 +166,34 @@ jobs:
           # ── Windows x86_64 (MSVC, without Npcap) ──
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-            name: windows-x86_64-msvc-nonpcap
+            name: windows-x86_64-msvc-no-npcap
             binary: winload.exe
-            asset: winload-windows-x86_64-msvc-nonpcap.exe
+            asset: winload-windows-x86_64-msvc-no-npcap.exe
             no_default_features: true
 
           # ── Windows x86_64 (MinGW, no Npcap) ──
           - target: x86_64-pc-windows-gnu
             os: windows-latest
-            name: windows-x86_64-mingw-nonpcap
+            name: windows-x86_64-mingw-no-npcap
             binary: winload.exe
-            asset: winload-windows-x86_64-mingw-nonpcap.exe
+            asset: winload-windows-x86_64-mingw-no-npcap.exe
             mingw: true
             no_default_features: true
 
           # ── Windows i686 (MSVC, without Npcap) ──
           - target: i686-pc-windows-msvc
             os: windows-latest
-            name: windows-i686-msvc-nonpcap
+            name: windows-i686-msvc-no-npcap
             binary: winload.exe
-            asset: winload-windows-i686-msvc-nonpcap.exe
+            asset: winload-windows-i686-msvc-no-npcap.exe
             no_default_features: true
 
           # ── Windows i686 (MinGW, no Npcap) ──
           - target: i686-pc-windows-gnu
             os: windows-latest
-            name: windows-i686-mingw-nonpcap
+            name: windows-i686-mingw-no-npcap
             binary: winload.exe
-            asset: winload-windows-i686-mingw-nonpcap.exe
+            asset: winload-windows-i686-mingw-no-npcap.exe
             mingw: true
             no_default_features: true
 
@@ -223,9 +223,9 @@ jobs:
           # ── Windows ARM64 (MSVC, without Npcap) ──
           - target: aarch64-pc-windows-msvc
             os: windows-latest
-            name: windows-aarch64-nonpcap
+            name: windows-aarch64-no-npcap
             binary: winload.exe
-            asset: winload-windows-aarch64-msvc-nonpcap.exe
+            asset: winload-windows-aarch64-msvc-no-npcap.exe
             no_default_features: true
 
           # ── Linux ARM64 (ubuntu-22.04 降低 GLIBC 要求) ──

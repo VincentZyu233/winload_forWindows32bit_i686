@@ -107,10 +107,13 @@ cargo install winload
 cargo install --list
 ```
 ### Windows (Scoop)
+> 📄 [Scoop Bucket (GitHub)](https://github.com/VincentZyuApps/scoop-bucket/blob/main/bucket/winload.json)
+> 📄 [Scoop Bucket (Gitee)](https://gitee.com/vincent-zyu/scoop-bucket/blob/main/bucket/winload.json)
 ```powershell
 scoop bucket add vincentzyu https://github.com/VincentZyuApps/scoop-bucket
 # または Gitee から：
 # scoop bucket add vincentzyu https://gitee.com/vincent-zyu/scoop-bucket
+scoop update   # optional: インストール前に bucket を手動更新
 scoop install winload
 # バイナリファイルを実行
 win-nload
@@ -149,11 +152,13 @@ which winload
 > 📄 [Giteeインストールスクリプトを表示](https://gitee.com/vincent-zyu/winload/blob/main/docs/install_scripts/install_gitee.sh)
 
 ### macOS / Linux（Homebrew）
+> 📄 [Homebrew Formula (GitHub)](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
+> 📄 [Homebrew Formula (Gitee)](https://gitee.com/vincent-zyu/homebrew-tap/blob/main/Formula/winload.rb)
 ```bash
 brew tap vincentzyuapps/tap
 # または Gitee から（手動クローン）：
 # git clone https://gitee.com/vincent-zyu/homebrew-tap.git "$(brew --prefix)/Library/Taps/vincentzyuapps/homebrew-tap"
-brew install winload
+brew update && brew install winload
 which winload
 ```
 > 📄 [Homebrew フォーミュラを表示](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)

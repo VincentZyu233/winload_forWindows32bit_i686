@@ -9,14 +9,15 @@
 
 > **For i686 (32-bit)**: Linux binary only — no DEB/RPM packages. Windows & Linux binaries are not published to npm / Scoop / AUR.
 
-| Arch | Windows | Linux | macOS | Android |
-|------|---------|-------|-------|---------|
-| **x86_64** | [![msvc-npcap](https://img.shields.io/badge/msvc--npcap-x64-0078D4.svg?logo=windows)](__BASE_URL__/winload-windows-x86_64-msvc-npcap-__VERSION__.exe) · [![msvc-no-npcap](https://img.shields.io/badge/msvc--no--npcap-x64-0078D4.svg?logo=windows)](__BASE_URL__/winload-windows-x86_64-msvc-nonpcap-__VERSION__.exe) · [![mingw-nonpcap](https://img.shields.io/badge/mingw--nonpcap-x64-0078D4.svg?logo=windows)](__BASE_URL__/winload-windows-x86_64-mingw-nonpcap-__VERSION__.exe) | [![binary](https://img.shields.io/badge/binary-x64-E95420.svg?logo=linux)](__BASE_URL__/winload-linux-x86_64-__VERSION__) · [![deb](https://img.shields.io/badge/deb-x64-D70A53.svg?logo=debian)](__BASE_URL__/winload-linux-x86_64-__VERSION__.deb) · [![rpm](https://img.shields.io/badge/rpm-x64-F1B42F.svg?logo=redhat)](__BASE_URL__/winload-linux-x86_64-__VERSION__.rpm) | [![binary](https://img.shields.io/badge/binary-Intel-000000.svg?logo=apple)](__BASE_URL__/winload-macos-x86_64-__VERSION__) | [![binary](https://img.shields.io/badge/binary-x64-96ed89.svg?logo=android)](__BASE_URL__/winload-android-x86_64-__VERSION__) |
-| **ARM64** | [![msvc-npcap](https://img.shields.io/badge/msvc--npcap-ARM64-0099CC.svg?logo=windows)](__BASE_URL__/winload-windows-aarch64-msvc-npcap-__VERSION__.exe) · [![msvc-no-npcap](https://img.shields.io/badge/msvc--no--npcap-ARM64-0099CC.svg?logo=windows)](__BASE_URL__/winload-windows-aarch64-msvc-nonpcap-__VERSION__.exe) | [![binary](https://img.shields.io/badge/binary-ARM64-E95420.svg?logo=linux)](__BASE_URL__/winload-linux-aarch64-__VERSION__) · [![deb](https://img.shields.io/badge/deb-ARM64-D70A53.svg?logo=debian)](__BASE_URL__/winload-linux-aarch64-__VERSION__.deb) · [![rpm](https://img.shields.io/badge/rpm-ARM64-F1B42F.svg?logo=redhat)](__BASE_URL__/winload-linux-aarch64-__VERSION__.rpm) | [![binary](https://img.shields.io/badge/binary-Apple_Silicon-000000.svg?logo=apple)](__BASE_URL__/winload-macos-aarch64-__VERSION__) | [![binary](https://img.shields.io/badge/binary-ARM64-168039.svg?logo=android)](__BASE_URL__/winload-android-aarch64-__VERSION__) |
-| **i686 (32-bit)** | [![msvc-no-npcap](https://img.shields.io/badge/msvc--no--npcap-i686-3B6EA5.svg?logo=windows)](__BASE_URL__/winload-windows-i686-msvc-nonpcap-__VERSION__.exe) · [![mingw-nonpcap](https://img.shields.io/badge/mingw--nonpcap-i686-3B6EA5.svg?logo=windows)](__BASE_URL__/winload-windows-i686-mingw-nonpcap-__VERSION__.exe) | [![binary](https://img.shields.io/badge/binary-i686-E95420.svg?logo=linux)](__BASE_URL__/winload-linux-i686-__VERSION__) | *Not provided* | *Not provided* |
+| OS / Arch | x86_64 | ARM64 | i686 (32-bit) |
+|-----------|--------|-------|---------------|
+| **Windows** | [![msvc-npcap](https://img.shields.io/badge/msvc--npcap-x64-0078D4.svg?logo=windows)](__BASE_URL__/winload-windows-x86_64-msvc-npcap-__VERSION__.exe) · [![msvc-no-npcap](https://img.shields.io/badge/msvc--no--npcap-x64-0078D4.svg?logo=windows)](__BASE_URL__/winload-windows-x86_64-msvc-no-npcap-__VERSION__.exe) · [![mingw-no-npcap](https://img.shields.io/badge/mingw--no--npcap-x64-0078D4.svg?logo=windows)](__BASE_URL__/winload-windows-x86_64-mingw-no-npcap-__VERSION__.exe) | [![msvc-npcap](https://img.shields.io/badge/msvc--npcap-ARM64-0099CC.svg?logo=windows)](__BASE_URL__/winload-windows-aarch64-msvc-npcap-__VERSION__.exe) · [![msvc-no-npcap](https://img.shields.io/badge/msvc--no--npcap-ARM64-0099CC.svg?logo=windows)](__BASE_URL__/winload-windows-aarch64-msvc-no-npcap-__VERSION__.exe) | [![msvc-no-npcap](https://img.shields.io/badge/msvc--no--npcap-i686-3B6EA5.svg?logo=windows)](__BASE_URL__/winload-windows-i686-msvc-no-npcap-__VERSION__.exe) · [![mingw-no-npcap](https://img.shields.io/badge/mingw--no--npcap-i686-3B6EA5.svg?logo=windows)](__BASE_URL__/winload-windows-i686-mingw-no-npcap-__VERSION__.exe) |
+| **Linux** | [![binary](https://img.shields.io/badge/binary-x64-E95420.svg?logo=linux)](__BASE_URL__/winload-linux-x86_64-__VERSION__) · [![deb](https://img.shields.io/badge/deb-x64-D70A53.svg?logo=debian)](__BASE_URL__/winload-linux-x86_64-__VERSION__.deb) · [![rpm](https://img.shields.io/badge/rpm-x64-F1B42F.svg?logo=redhat)](__BASE_URL__/winload-linux-x86_64-__VERSION__.rpm) | [![binary](https://img.shields.io/badge/binary-ARM64-E95420.svg?logo=linux)](__BASE_URL__/winload-linux-aarch64-__VERSION__) · [![deb](https://img.shields.io/badge/deb-ARM64-D70A53.svg?logo=debian)](__BASE_URL__/winload-linux-aarch64-__VERSION__.deb) · [![rpm](https://img.shields.io/badge/rpm-ARM64-F1B42F.svg?logo=redhat)](__BASE_URL__/winload-linux-aarch64-__VERSION__.rpm) | [![binary](https://img.shields.io/badge/binary-i686-E95420.svg?logo=linux)](__BASE_URL__/winload-linux-i686-__VERSION__) |
+| **macOS** | [![binary](https://img.shields.io/badge/binary-Intel-000000.svg?logo=apple)](__BASE_URL__/winload-macos-x86_64-__VERSION__) | [![binary](https://img.shields.io/badge/binary-Apple_Silicon-000000.svg?logo=apple)](__BASE_URL__/winload-macos-aarch64-__VERSION__) | *Not provided* |
+| **Android** | [![binary](https://img.shields.io/badge/binary-x64-96ed89.svg?logo=android)](__BASE_URL__/winload-android-x86_64-__VERSION__) | [![binary](https://img.shields.io/badge/binary-ARM64-168039.svg?logo=android)](__BASE_URL__/winload-android-aarch64-__VERSION__) | *Not provided* |
 
-> **Windows Binary Labels**: `msvc-npcap` = MSVC with Npcap loopback capture (requires Npcap installed, Windows 7+); `msvc-no-npcap` = MSVC standalone, no Npcap (Windows 7+); `mingw-nonpcap` = MinGW-w64 standalone, no Npcap, for legacy Windows (XP/Vista/7+).<br>
-> **Build Toolchain**: `msvc-npcap` & `msvc-no-npcap` are built with MSVC (VS 2022, requires Windows 7+ with KB2999226). `mingw-nonpcap` variants use MinGW-w64 — runs on Windows XP through 11, pick this if the MSVC binary fails to start on your system.<br>
+> **Windows Binary Labels**: `msvc-npcap` = MSVC with Npcap loopback capture (requires Npcap installed, Windows 7+); `msvc-no-npcap` = MSVC standalone, no Npcap (Windows 7+); `mingw-no-npcap` = MinGW-w64 standalone, no Npcap, for legacy Windows (XP/Vista/7+).<br>
+> **Build Toolchain**: `msvc-npcap` & `msvc-no-npcap` are built with MSVC (VS 2022, requires Windows 7+ with KB2999226). `mingw-no-npcap` variants use MinGW-w64 — runs on Windows XP through 11, pick this if the MSVC binary fails to start on your system.<br>
 
 
 ### 📥 Quick Install
@@ -44,6 +45,7 @@ cargo install winload@__PLAIN_VER__
 **Windows (Scoop):**
 ```powershell
 scoop bucket add vincentzyu https://github.com/VincentZyuApps/scoop-bucket
+scoop update   # optional: manually refresh bucket list before install
 scoop install winload@__PLAIN_VER__
 ```
 > 📄 [Scoop Bucket](https://github.com/VincentZyuApps/scoop-bucket)
@@ -51,6 +53,7 @@ scoop install winload@__PLAIN_VER__
 **🇨🇳 Windows (Scoop) — 码云镜像 Gitee mirror:**
 ```powershell
 scoop bucket add vincentzyu https://gitee.com/vincent-zyu/scoop-bucket
+scoop update   # optional: manually refresh bucket list before install
 scoop install winload@__PLAIN_VER__
 ```
 > 📄 [Gitee Scoop Bucket](https://gitee.com/vincent-zyu/scoop-bucket)
@@ -85,14 +88,14 @@ WINLOAD_VERSION=__VERSION__ bash -c "$(curl -fsSL https://gitee.com/vincent-zyu/
 **macOS / Linux (Homebrew):**
 ```bash
 brew tap vincentzyuapps/tap
-brew install winload@__PLAIN_VER__
+brew update && brew install winload@__PLAIN_VER__
 ```
 > 📄 [Homebrew Formula (GitHub)](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 
 **🇨🇳 Homebrew — 码云镜像 Gitee mirror (手动克隆tap仓库，manual tap clone):**
 ```bash
 git clone https://gitee.com/vincent-zyu/homebrew-tap.git "$(brew --prefix)/Library/Taps/vincentzyuapps/homebrew-tap"
-brew install winload@__PLAIN_VER__
+brew update && brew install winload@__PLAIN_VER__
 ```
 > 📄 [Homebrew Formula (Gitee)](https://gitee.com/vincent-zyu/homebrew-tap/blob/main/Formula/winload.rb)
 > 💡 Homebrew supports **macOS** (Intel & Apple Silicon) and **Linux** (x86_64 & ARM64).
