@@ -126,7 +126,7 @@ where win-nload # CMD
 > scoop install windows-terminal-preview
 > wtp
 > ```
-> 💡 Scoop은 **x86_64** 및 **ARM64**용 **MSVC + Npcap** 빌드만 제공합니다. 다른 변형(MinGW, Npcap 미포함) 또는 구형 Windows(7/Vista/8)의 경우 [GitHub Releases](https://github.com/VincentZyuApps/winload/releases)에서 직접 다운로드하세요.
+> 💡 **모든 빌드는 Windows 10+가 필요합니다**（Rust 1.77+에서 Windows 7/8 지원이 중단되었습니다）。Scoop은 **x86_64** 및 **ARM64**용 **MSVC + Npcap** 빌드만 제공합니다. 다른 변형(MinGW, Npcap 미포함, i686)은 [GitHub Releases](https://github.com/VincentZyuApps/winload/releases)에서 다운로드하세요.
 
 ### Arch Linux (AUR):
 ```bash

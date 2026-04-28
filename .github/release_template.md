@@ -16,8 +16,8 @@
 | **macOS** | [![binary](https://img.shields.io/badge/binary-Intel-000000.svg?logo=apple)](__BASE_URL__/winload-macos-x86_64-__VERSION__) | [![binary](https://img.shields.io/badge/binary-Apple_Silicon-000000.svg?logo=apple)](__BASE_URL__/winload-macos-aarch64-__VERSION__) | *Not provided* |
 | **Android** | [![binary](https://img.shields.io/badge/binary-x64-96ed89.svg?logo=android)](__BASE_URL__/winload-android-x86_64-__VERSION__) | [![binary](https://img.shields.io/badge/binary-ARM64-168039.svg?logo=android)](__BASE_URL__/winload-android-aarch64-__VERSION__) | *Not provided* |
 
-> **Windows Binary Labels**: `msvc-npcap` = MSVC with Npcap loopback capture (requires Npcap installed, Windows 7+); `msvc-no-npcap` = MSVC standalone, no Npcap (Windows 7+); `mingw-no-npcap` = MinGW-w64 standalone, no Npcap, for legacy Windows (XP/Vista/7+).<br>
-> **Build Toolchain**: `msvc-npcap` & `msvc-no-npcap` are built with MSVC (VS 2022, requires Windows 7+ with KB2999226). `mingw-no-npcap` variants use MinGW-w64 — runs on Windows XP through 11, pick this if the MSVC binary fails to start on your system.<br>
+> **Windows Binary Labels**: `msvc-npcap` = MSVC with Npcap loopback capture (requires Npcap installed, **Windows 10+**); `msvc-no-npcap` = MSVC standalone, no Npcap (**Windows 10+**); `mingw-no-npcap` = MinGW-w64 standalone, no Npcap (**Windows 10+**). For older Windows (7/8/XP/Vista), use pre-1.77 Rust builds from earlier releases.<br>
+> **Build Toolchain**: Rust 1.77+ dropped Windows 7 support. All builds require **Windows 10+**. `mingw-no-npcap` provides the best compatibility for Windows 10 32-bit.<br>
 
 
 ### 📥 Quick Install
@@ -57,7 +57,7 @@ scoop update   # optional: manually refresh bucket list before install
 scoop install winload@__PLAIN_VER__
 ```
 > 📄 [Gitee Scoop Bucket](https://gitee.com/vincent-zyu/scoop-bucket)
-> 💡 Scoop provides only **MSVC + Npcap** builds for **x86_64** and **ARM64** (Windows 7+). For other variants (MinGW, non-Npcap) or older Windows, download from the table above.
+> 💡 **All builds require Windows 10+** (Rust 1.77+ dropped Windows 7/8 support). Scoop provides only **MSVC + Npcap** for **x86_64** and **ARM64**. For other variants (MinGW, non-Npcap, i686), download from the table above.
 
 **Arch Linux (AUR):**
 ```bash

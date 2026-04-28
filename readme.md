@@ -126,7 +126,7 @@ where win-nload # CMD
 > scoop install windows-terminal-preview
 > wtp
 > ```
-> 💡 Scoop provides only **MSVC + Npcap** builds for **x86_64** and **ARM64**. For other variants (MinGW, non-Npcap) or older Windows (7/Vista/8), download manually from [GitHub Releases](https://github.com/VincentZyuApps/winload/releases).
+> 💡 **All builds require Windows 10+** (Rust 1.77+ dropped Windows 7/8 support). Scoop provides only **MSVC + Npcap** for **x86_64** and **ARM64**. For other variants (MinGW, non-Npcap, i686) or older Windows, download from [GitHub Releases](https://github.com/VincentZyuApps/winload/releases).
 
 ### Arch Linux (AUR):
 ```bash
