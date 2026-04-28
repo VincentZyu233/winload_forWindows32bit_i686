@@ -49,6 +49,27 @@ https://github.com/rolandriegel/nload
 
 ![Winload Benchmark](docs/benchmark/benchmark.svg)
 
+## 🔧 ソースから実行
+
+### Python
+```bash
+git clone https://github.com/VincentZyuApps/winload.git
+# または Gitee からクローン（中国本土で高速）：
+# git clone https://gitee.com/vincent-zyu/winload.git
+cd winload/py
+pip install -r requirements.txt
+python main.py
+```
+
+### Rust
+```bash
+git clone https://github.com/VincentZyuApps/winload.git
+cd winload/rust
+cargo run --release
+cargo run --release -- --help    # ヘルプを表示
+cargo run --release -- --version # バージョンを表示
+```
+
 ## 🐍 Python 版 インストール
 > 💡 **実装に関する注記**: PyPI および GitHub/Gitee のソースコードのみが Python 版です。  
 > Cargo のみが Rust ソースコードのローカルビルドを提供します。  
@@ -59,7 +80,7 @@ pip install winload
 # uv の使用を推奨：
 # https://docs.astral.sh/uv/getting-started/installation/
 # https://gitee.com/wangnov/uv-custom/releases
-uv venv
+uv venv --python 3.12
 uv pip install winload
 uv run winload
 uv run python -c "import shutil; print(shutil.which('winload'))"

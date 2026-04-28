@@ -608,11 +608,11 @@ jobs:
             --latest \
             "${FILES[@]}"
 
-  # ── 更新 Scoop Bucket ─────────────────────────────────
+  # ── 更新 Scoop Bucket (GitHub) ─────────────────────────────
   # 触发方式:
   #   - "publish from release" → 从已有 Release 拉取二进制，仅更新 Scoop
   #   - "build publish" → 构建 + Release + 更新 Scoop（全套）
-  publish-scoop:
+  publish-scoop-github:
     name: Update Scoop Bucket
     needs: [check, release]
     # always() 让此 job 即使 release 被跳过也能运行
@@ -712,6 +712,315 @@ jobs:
           git push
 
           echo "✅ Scoop bucket updated!"
+
+  # ── 更新 Scoop Bucket (Gitee) ──────────────────────────────
+  # 生成指向 Gitee Releases 的 scoop manifest，推送到 Gitee
+  publish-scoop-gitee:
+    name: 【码云】Update Scoop Bucket
+    needs: [check, release]
+    if: always() && needs.check.outputs.should_publish == 'true' && (needs.release.result == 'success' || needs.release.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch latest release info from Gitee
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          VERSION="${{ needs.check.outputs.version }}"
+          GITEE_REPO="vincent-zyu/winload"
+          GITEE_BASE_URL="https://gitee.com/vincent-zyu/winload/releases/download/${VERSION}"
+
+          echo "📦 Target version: ${VERSION}"
+          echo "📥 Downloading Windows binaries from Gitee release..."
+
+          # 下载 Windows x64
+          curl -fSL -o winload-windows-x86_64.exe \
+            "${GITEE_BASE_URL}/winload-windows-x86_64-msvc-npcap-${VERSION}.exe" \
+            || { echo "❌ Failed to download x64 binary from Gitee"; exit 1; }
+
+          # 下载 Windows ARM64
+          curl -fSL -o winload-windows-aarch64.exe \
+            "${GITEE_BASE_URL}/winload-windows-aarch64-msvc-npcap-${VERSION}.exe" \
+            || { echo "❌ Failed to download arm64 binary from Gitee"; exit 1; }
+
+          echo "✅ Downloaded from Gitee:"
+          ls -lh winload-windows-*.exe
+
+      - name: Generate Gitee Scoop manifest
+        run: |
+          VERSION="${{ needs.check.outputs.version }}"
+          SCOOP_VERSION="${VERSION#v}"
+          GITEE_BASE_URL="https://gitee.com/vincent-zyu/winload/releases/download/${VERSION}"
+
+          # 计算 sha256
+          HASH_X64=$(sha256sum winload-windows-x86_64.exe | awk '{print $1}')
+          HASH_ARM64=$(sha256sum winload-windows-aarch64.exe | awk '{print $1}')
+
+          echo "📦 Version: $SCOOP_VERSION"
+          echo "🔑 x64 hash: $HASH_X64"
+          echo "🔑 arm64 hash: $HASH_ARM64"
+
+          cat > winload.json << 'EOF'
+          {
+              "version": "${SCOOP_VERSION}",
+              "description": "Network Load Monitor - nload for Windows/Linux/macOS",
+              "homepage": "https://gitee.com/vincent-zyu/winload",
+              "license": "MIT",
+              "architecture": {
+                  "64bit": {
+                      "url": "${GITEE_BASE_URL}/winload-windows-x86_64-msvc-npcap-${VERSION}.exe",
+                      "hash": "${HASH_X64}",
+                      "bin": [["winload-windows-x86_64-msvc-npcap-${VERSION}.exe", "win-nload"]]
+                  },
+                  "arm64": {
+                      "url": "${GITEE_BASE_URL}/winload-windows-aarch64-msvc-npcap-${VERSION}.exe",
+                      "hash": "${HASH_ARM64}",
+                      "bin": [["winload-windows-aarch64-msvc-npcap-${VERSION}.exe", "win-nload"]]
+                  }
+              },
+              "checkver": {
+                  "url": "https://gitee.com/vincent-zyu/winload/releases"
+              },
+              "autoupdate": {
+                  "architecture": {
+                      "64bit": {
+                          "url": "https://gitee.com/vincent-zyu/winload/releases/download/v$version/winload-windows-x86_64-msvc-npcap-v$version.exe"
+                      },
+                      "arm64": {
+                          "url": "https://gitee.com/vincent-zyu/winload/releases/download/v$version/winload-windows-aarch64-msvc-npcap-v$version.exe"
+                      }
+                  }
+              }
+          }
+          EOF
+
+          echo "📝 Generated Gitee winload.json:"
+          cat winload.json
+
+      - name: Push to Gitee scoop-bucket repo
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          VERSION="${{ needs.check.outputs.version }}"
+
+          git clone https://x-access-token:${GITEE_TOKEN}@gitee.com/vincent-zyu/scoop-bucket.git scoop-repo
+          cp winload.json scoop-repo/bucket/winload.json
+
+          cd scoop-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add bucket/winload.json
+          git commit -m "🍺 Update winload to ${VERSION}" || echo "No changes to commit"
+          git push
+
+          echo "✅ Gitee Scoop bucket updated!"
+
+  # ── 更新 Homebrew Tap (GitHub) ─────────────────────────────
+  # 生成指向 GitHub Releases 的 homebrew formula，推送到 GitHub homebrew-tap
+  publish-homebrew-github:
+    name: Update Homebrew Tap
+    needs: [check, release]
+    if: always() && needs.check.outputs.should_publish == 'true' && (needs.release.result == 'success' || needs.release.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch latest release info
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ needs.check.outputs.version }}"
+          REPO="${{ github.repository }}"
+          BASE_URL="https://github.com/${REPO}/releases/download/${VERSION}"
+
+          echo "📦 Target version: ${VERSION}"
+
+          # 下载所有平台的二进制用于计算 SHA256
+          PLATFORMS=(
+            "winload-linux-x86_64:${BASE_URL}/winload-linux-x86_64-${VERSION}"
+            "winload-linux-aarch64:${BASE_URL}/winload-linux-aarch64-${VERSION}"
+            "winload-macos-x86_64:${BASE_URL}/winload-macos-x86_64-${VERSION}"
+            "winload-macos-aarch64:${BASE_URL}/winload-macos-aarch64-${VERSION}"
+          )
+
+          for entry in "${PLATFORMS[@]}"; do
+            NAME="${entry%%:*}"
+            URL="${entry##*:}"
+            echo "📥 Downloading $NAME..."
+            curl -fSL -o "$NAME" "$URL" || echo "⚠️ Failed to download $NAME (may not exist)"
+          done
+
+          echo "✅ Downloaded:"
+          ls -lh winload-* 2>/dev/null || echo "No binaries downloaded"
+
+      - name: Generate Homebrew formula
+        run: |
+          VERSION="${{ needs.check.outputs.version }}"
+          TAGVER="${VERSION#v}"  # 去掉 v 前缀
+          REPO="${{ github.repository }}"
+          BASE_URL="https://github.com/${REPO}/releases/download/${VERSION}"
+
+          # 计算各平台 SHA256
+          SHA_LINUX_X64=$(sha256sum winload-linux-x86_64 2>/dev/null | awk '{print $1}' || echo "")
+          SHA_LINUX_ARM64=$(sha256sum winload-linux-aarch64 2>/dev/null | awk '{print $1}' || echo "")
+          SHA_MACOS_X64=$(sha256sum winload-macos-x86_64 2>/dev/null | awk '{print $1}' || echo "")
+          SHA_MACOS_ARM64=$(sha256sum winload-macos-aarch64 2>/dev/null | awk '{print $1}' || echo "")
+
+          cat > Formula/winload.rb << HEREDOC
+          class Winload < Formula
+            desc "Network Load Monitor - nload-like TUI tool for Windows/Linux/macOS"
+            homepage "https://github.com/${REPO}"
+            license "MIT"
+            version "${TAGVER}"
+
+            # Dynamic URL generation per platform
+            if OS.mac? && Hardware::CPU.intel?
+              url "${BASE_URL}/winload-macos-x86_64-${VERSION}"
+              sha256 "${SHA_MACOS_X64}"
+            elsif OS.mac?
+              url "${BASE_URL}/winload-macos-aarch64-${VERSION}"
+              sha256 "${SHA_MACOS_ARM64}"
+            elsif OS.linux? && Hardware::CPU.intel?
+              url "${BASE_URL}/winload-linux-x86_64-${VERSION}"
+              sha256 "${SHA_LINUX_X64}"
+            elsif OS.linux?
+              url "${BASE_URL}/winload-linux-aarch64-${VERSION}"
+              sha256 "${SHA_LINUX_ARM64}"
+            end
+
+            def install
+              bin.install "winload"
+            end
+
+            test do
+              system "#{bin}/winload", "--version"
+            end
+          end
+          HEREDOC
+
+          # 移除 heredoc 缩进
+          sed -i 's/^          //' Formula/winload.rb
+
+          echo "📝 Generated Formula/winload.rb:"
+          cat Formula/winload.rb
+
+      - name: Push to homebrew-tap repo
+        env:
+          GH_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN }}  # 复用已有 token
+        run: |
+          VERSION="${{ needs.check.outputs.version }}"
+
+          git clone https://x-access-token:${GH_TOKEN}@github.com/VincentZyuApps/homebrew-tap.git brew-repo
+          cp Formula/winload.rb brew-repo/Formula/winload.rb
+
+          cd brew-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/winload.rb
+          git commit -m "🍺 Update winload to ${VERSION}" || echo "No changes to commit"
+          git push
+
+          echo "✅ Homebrew tap updated!"
+
+  # ── 更新 Homebrew Tap (Gitee) ─────────────────────────────
+  # 生成指向 Gitee Releases 的 homebrew formula，推送到 Gitee homebrew-tap
+  publish-homebrew-gitee:
+    name: 【码云】Update Homebrew Tap
+    needs: [check, release]
+    if: always() && needs.check.outputs.should_publish == 'true' && (needs.release.result == 'success' || needs.release.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch latest release info from Gitee
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          VERSION="${{ needs.check.outputs.version }}"
+          GITEE_BASE_URL="https://gitee.com/vincent-zyu/winload/releases/download/${VERSION}"
+
+          echo "📦 Target version: ${VERSION}"
+
+          # 下载所有平台的二进制用于计算 SHA256
+          PLATFORMS=(
+            "winload-linux-x86_64:${GITEE_BASE_URL}/winload-linux-x86_64-${VERSION}"
+            "winload-linux-aarch64:${GITEE_BASE_URL}/winload-linux-aarch64-${VERSION}"
+            "winload-macos-x86_64:${GITEE_BASE_URL}/winload-macos-x86_64-${VERSION}"
+            "winload-macos-aarch64:${GITEE_BASE_URL}/winload-macos-aarch64-${VERSION}"
+          )
+
+          for entry in "${PLATFORMS[@]}"; do
+            NAME="${entry%%:*}"
+            URL="${entry##*:}"
+            echo "📥 Downloading $NAME from Gitee..."
+            curl -fSL -o "$NAME" "$URL" || echo "⚠️ Failed to download $NAME (may not exist)"
+          done
+
+          echo "✅ Downloaded:"
+          ls -lh winload-* 2>/dev/null || echo "No binaries downloaded"
+
+      - name: Generate Homebrew formula (Gitee)
+        run: |
+          VERSION="${{ needs.check.outputs.version }}"
+          TAGVER="${VERSION#v}"
+          GITEE_BASE_URL="https://gitee.com/vincent-zyu/winload/releases/download/${VERSION}"
+
+          # 计算各平台 SHA256
+          SHA_LINUX_X64=$(sha256sum winload-linux-x86_64 2>/dev/null | awk '{print $1}' || echo "")
+          SHA_LINUX_ARM64=$(sha256sum winload-linux-aarch64 2>/dev/null | awk '{print $1}' || echo "")
+          SHA_MACOS_X64=$(sha256sum winload-macos-x86_64 2>/dev/null | awk '{print $1}' || echo "")
+          SHA_MACOS_ARM64=$(sha256sum winload-macos-aarch64 2>/dev/null | awk '{print $1}' || echo "")
+
+          cat > Formula/winload.rb << HEREDOC
+          class Winload < Formula
+            desc "Network Load Monitor - nload-like TUI tool for Windows/Linux/macOS"
+            homepage "https://gitee.com/vincent-zyu/winload"
+            license "MIT"
+            version "${TAGVER}"
+
+            # Dynamic URL generation per platform (Gitee)
+            if OS.mac? && Hardware::CPU.intel?
+              url "${GITEE_BASE_URL}/winload-macos-x86_64-${VERSION}"
+              sha256 "${SHA_MACOS_X64}"
+            elsif OS.mac?
+              url "${GITEE_BASE_URL}/winload-macos-aarch64-${VERSION}"
+              sha256 "${SHA_MACOS_ARM64}"
+            elsif OS.linux? && Hardware::CPU.intel?
+              url "${GITEE_BASE_URL}/winload-linux-x86_64-${VERSION}"
+              sha256 "${SHA_LINUX_X64}"
+            elsif OS.linux?
+              url "${GITEE_BASE_URL}/winload-linux-aarch64-${VERSION}"
+              sha256 "${SHA_LINUX_ARM64}"
+            end
+
+            def install
+              bin.install "winload"
+            end
+
+            test do
+              system "#{bin}/winload", "--version"
+            end
+          end
+          HEREDOC
+
+          # 移除 heredoc 缩进
+          sed -i 's/^          //' Formula/winload.rb
+
+          echo "📝 Generated Formula/winload.rb (Gitee):"
+          cat Formula/winload.rb
+
+      - name: Push to Gitee homebrew-tap repo
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          VERSION="${{ needs.check.outputs.version }}"
+
+          git clone https://x-access-token:${GITEE_TOKEN}@gitee.com/vincent-zyu/homebrew-tap.git brew-repo
+          cp Formula/winload.rb brew-repo/Formula/winload.rb
+
+          cd brew-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/winload.rb
+          git commit -m "🍺 Update winload to ${VERSION}" || echo "No changes to commit"
+          git push
+
+          echo "✅ Gitee Homebrew tap updated!"
 
   # ── 更新 AUR 包（winload-rust-bin: 预编译二进制）─────────────
   publish-aur-bin:

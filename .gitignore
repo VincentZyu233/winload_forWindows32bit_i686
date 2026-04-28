@@ -13,6 +13,8 @@ py/venv/
 py/ENV/
 py/env/
 py/.env
+**/.venv/
+**/venv/
 
 # Python 缓存
 py/__pycache__/

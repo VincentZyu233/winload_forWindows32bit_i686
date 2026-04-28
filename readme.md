@@ -49,6 +49,27 @@ https://github.com/rolandriegel/nload
 
 ![Winload Benchmark](docs/benchmark/benchmark.svg)
 
+## 🔧 Run from Source
+
+### Python
+```bash
+git clone https://github.com/VincentZyuApps/winload.git
+# or clone from Gitee (faster in China Mainland):
+# git clone https://gitee.com/vincent-zyu/winload.git
+cd winload/py
+pip install -r requirements.txt
+python main.py
+```
+
+### Rust
+```bash
+git clone https://github.com/VincentZyuApps/winload.git
+cd winload/rust
+cargo run --release
+cargo run --release -- --help    # Show help
+cargo run --release -- --version # Show version
+```
+
 ## 🐍 Python Edition Installation
 > 💡 **Implementation Note**: Only PyPI and GitHub/Gitee provide Python edition.  
 > Only Cargo provides Rust source code for local compilation.  
@@ -59,7 +80,7 @@ pip install winload
 # recommend use uv:
 # https://docs.astral.sh/uv/getting-started/installation/
 # https://gitee.com/wangnov/uv-custom/releases
-uv venv
+uv venv --python 3.12
 uv pip install winload
 uv run winload
 uv run python -c "import shutil; print(shutil.which('winload'))"

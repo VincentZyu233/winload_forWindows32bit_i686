@@ -319,14 +319,14 @@ fn draw_traffic_panel(
     };
     let scale_label = graph::get_graph_scale_label_unit(scale_max, unit);
     let mode_tag = if let Some(m) = fixed_max {
-        format!(" [fixed: {}]", stats::format_speed_unit(m, unit))
+        format!(" [{}: {}]", t("tag_fixed"), stats::format_speed_unit(m, unit))
     } else if let Some(hl) = smart_max_half_life {
         let arrow = match smart_max_rising {
-            Some(true) => " ↑",
-            Some(false) => " ↓",
-            None => "",
+            Some(true) => format!(" {}", t("arrow_up")),
+            Some(false) => format!(" {}", t("arrow_down")),
+            None => String::new(),
         };
-        format!(" [smart-max {}s]{}", hl, arrow)
+        format!(" [{} {}s]{}", t("tag_smart_max"), hl, arrow)
     } else {
         String::new()
     };
@@ -533,106 +533,101 @@ fn draw_debug_overlay(frame: &mut Frame, area: Rect, app: &App) {
         Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD), no_color);
     let value_style = maybe_strip(Style::default().fg(Color::White), no_color);
 
-    let kv = |key: &str, val: &str| -> Line<'static> {
+    let kv = |key: String, val: String| -> Line<'static> {
         Line::from(vec![
             Span::styled(format!("  {:<14}", key), label_style),
-            Span::styled(val.to_string(), value_style),
+            Span::styled(val, value_style),
         ])
     };
-    let on_off = |b: bool| -> &'static str { if b { "on" } else { "off" } };
+    let on_off = |b: bool| -> &'static str { if b { t("on") } else { t("off") } };
 
     let mut lines: Vec<Line> = Vec::new();
 
     // Title
-    lines.push(Line::from(Span::styled(
-        "\u{2550}\u{2550}\u{2550} winload Debug Info (F3) \u{2550}\u{2550}\u{2550}", title_style)));
+    lines.push(Line::from(Span::styled(t("f3_title"), title_style)));
     lines.push(Line::from(""));
 
     // Version & System
-    lines.push(kv("Version:", &format!("{} (Rust edition)", env!("CARGO_PKG_VERSION"))));
-    lines.push(kv("System:", &format!("{} | {} | {}",
+    lines.push(kv(t("debug_version").to_string(), format!("{} (Rust edition)", env!("CARGO_PKG_VERSION"))));
+    lines.push(kv(t("debug_system").to_string(), format!("{} | {} | {}",
         std::env::consts::OS, std::env::consts::ARCH, env!("TARGET"))));
     let lang_str = match crate::i18n::get_lang() {
         crate::i18n::Lang::EnUs => "en-us",
         crate::i18n::Lang::ZhCn => "zh-cn",
         crate::i18n::Lang::ZhTw => "zh-tw",
     };
-    lines.push(kv("Language:", lang_str));
+    lines.push(kv(t("debug_language").to_string(), lang_str.to_string()));
     lines.push(Line::from(""));
 
     // Parameters
-    lines.push(Line::from(Span::styled(
-        "\u{2550}\u{2550}\u{2550} Parameters \u{2550}\u{2550}\u{2550}", section_style)));
-    lines.push(kv("Interval:", &format!("{} ms", app.interval)));
-    lines.push(kv("Average:", &format!("{} s", app.average)));
-    lines.push(kv("Unit:", match app.unit { Unit::Bit => "bit", Unit::Byte => "byte" }));
-    lines.push(kv("Bar Style:", match app.bar_style {
+    lines.push(Line::from(Span::styled(t("debug_section_params"), section_style)));
+    lines.push(kv(t("debug_interval").to_string(), format!("{} ms", app.interval)));
+    lines.push(kv(t("debug_average").to_string(), format!("{} s", app.average)));
+    lines.push(kv(t("debug_unit").to_string(), match app.unit { Unit::Bit => "bit", Unit::Byte => "byte" }.to_string()));
+    lines.push(kv(t("debug_bar_style").to_string(), match app.bar_style {
         BarStyle::Fill => "fill", BarStyle::Color => "color", BarStyle::Plain => "plain",
-    }));
-    lines.push(kv("Emoji:", on_off(app.emoji)));
-    lines.push(kv("Unicode:", on_off(app.unicode)));
-    lines.push(kv("No Graph:", on_off(app.no_graph)));
-    lines.push(kv("No Color:", on_off(app.no_color)));
-    lines.push(kv("Hide Sep:", on_off(app.hide_separator)));
+    }.to_string()));
+    lines.push(kv(t("debug_emoji").to_string(), on_off(app.emoji).to_string()));
+    lines.push(kv(t("debug_unicode").to_string(), on_off(app.unicode).to_string()));
+    lines.push(kv(t("debug_no_graph").to_string(), on_off(app.no_graph).to_string()));
+    lines.push(kv(t("debug_no_color").to_string(), on_off(app.no_color).to_string()));
+    lines.push(kv(t("debug_hide_sep").to_string(), on_off(app.hide_separator).to_string()));
     lines.push(Line::from(""));
 
     // Y-axis Scaling
-    lines.push(Line::from(Span::styled(
-        "\u{2550}\u{2550}\u{2550} Y-axis Scaling \u{2550}\u{2550}\u{2550}", section_style)));
+    lines.push(Line::from(Span::styled(t("debug_section_yaxis"), section_style)));
     let mode_str = if let Some(m) = app.fixed_max {
-        format!("fixed-max ({})", stats::format_speed_unit(m, app.unit))
+        t("yaxis_fixed").replace("{val}", &stats::format_speed_unit(m, app.unit))
     } else if let Some(hl) = app.smart_max_half_life {
-        format!("smart-max (half-life: {}s)", hl)
+        t("yaxis_smart").replace("{sec}", &hl.to_string())
     } else {
-        "auto (history peak)".to_string()
+        t("yaxis_auto").to_string()
     };
-    lines.push(kv("Mode:", &mode_str));
+    lines.push(kv(t("debug_yaxis_mode").to_string(), mode_str));
     if let Some(view) = app.current_view() {
         if app.smart_max_half_life.is_some() {
-            lines.push(kv("In smooth:", &stats::format_speed_unit(
+            lines.push(kv(t("debug_in_smooth").to_string(), stats::format_speed_unit(
                 view.engine.incoming_smooth_peak, app.unit)));
-            lines.push(kv("Out smooth:", &stats::format_speed_unit(
+            lines.push(kv(t("debug_out_smooth").to_string(), stats::format_speed_unit(
                 view.engine.outgoing_smooth_peak, app.unit)));
         }
     }
     lines.push(Line::from(""));
 
     // Device
-    lines.push(Line::from(Span::styled(
-        "\u{2550}\u{2550}\u{2550} Device \u{2550}\u{2550}\u{2550}", section_style)));
+    lines.push(Line::from(Span::styled(t("debug_section_device"), section_style)));
     if let Some(view) = app.current_view() {
         let addr = if !view.info.addrs.is_empty() {
-            view.info.addrs[0].as_str()
+            view.info.addrs[0].clone()
         } else {
-            "(none)"
+            t("addr_none").to_string()
         };
-        lines.push(kv("Name:", &format!("{} ({}/{})",
+        lines.push(kv(t("debug_device_name").to_string(), format!("{} ({}/{})",
             view.info.name, app.current_idx + 1, app.views.len())));
-        lines.push(kv("Address:", addr));
-        lines.push(kv("In Curr:", &stats::format_speed_unit(
+        lines.push(kv(t("debug_device_addr").to_string(), addr));
+        lines.push(kv(t("debug_in_curr").to_string(), stats::format_speed_unit(
             view.engine.incoming.current, app.unit)));
-        lines.push(kv("Out Curr:", &stats::format_speed_unit(
+        lines.push(kv(t("debug_out_curr").to_string(), stats::format_speed_unit(
             view.engine.outgoing.current, app.unit)));
-        lines.push(kv("In Total:", &stats::format_bytes(view.engine.incoming.total)));
-        lines.push(kv("Out Total:", &stats::format_bytes(view.engine.outgoing.total)));
-        lines.push(kv("In Peak:", &stats::format_speed_unit(
+        lines.push(kv(t("debug_in_total").to_string(), stats::format_bytes(view.engine.incoming.total)));
+        lines.push(kv(t("debug_out_total").to_string(), stats::format_bytes(view.engine.outgoing.total)));
+        lines.push(kv(t("debug_in_peak").to_string(), stats::format_speed_unit(
             view.engine.incoming.maximum, app.unit)));
-        lines.push(kv("Out Peak:", &stats::format_speed_unit(
+        lines.push(kv(t("debug_out_peak").to_string(), stats::format_speed_unit(
             view.engine.outgoing.maximum, app.unit)));
     }
     lines.push(Line::from(""));
 
     // Colors
-    lines.push(Line::from(Span::styled(
-        "\u{2550}\u{2550}\u{2550} Colors \u{2550}\u{2550}\u{2550}", section_style)));
+    lines.push(Line::from(Span::styled(t("debug_section_colors"), section_style)));
     let fmt_color = |c: Color| -> String {
         match c {
             Color::Rgb(r, g, b) => format!("#{:02x}{:02x}{:02x}", r, g, b),
-            other => format!("{:?}", other),
+            other => format!("{:?} {}", other, t("default_tag")),
         }
     };
-    lines.push(kv("In Color:", &fmt_color(app.in_color)));
-    lines.push(kv("Out Color:", &fmt_color(app.out_color)));
+    lines.push(kv(t("debug_in_color").to_string(), fmt_color(app.in_color)));
+    lines.push(kv(t("debug_out_color").to_string(), fmt_color(app.out_color)));
 
     // Layout: content + help bar
     let chunks = Layout::default()

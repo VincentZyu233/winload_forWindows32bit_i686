@@ -49,6 +49,27 @@ https://github.com/rolandriegel/nload
 
 ![Winload Benchmark](docs/benchmark/benchmark.svg)
 
+## 🔧 소스에서 실행
+
+### Python
+```bash
+git clone https://github.com/VincentZyuApps/winload.git
+# 또는 Gitee에서 클론 (중국 본토에서 더 빠름):
+# git clone https://gitee.com/vincent-zyu/winload.git
+cd winload/py
+pip install -r requirements.txt
+python main.py
+```
+
+### Rust
+```bash
+git clone https://github.com/VincentZyuApps/winload.git
+cd winload/rust
+cargo run --release
+cargo run --release -- --help    # 도움말 표시
+cargo run --release -- --version # 버전 표시
+```
+
 ## 🐍 Python 버전 설치
 > 💡 **구현 참고사항**: PyPI 및 GitHub/Gitee 소스 코드만 Python 버전입니다.  
 > Cargo만 Rust 소스 코드 로컬 빌드를 제공합니다.  
@@ -59,7 +80,7 @@ pip install winload
 # uv 사용을 권장합니다:
 # https://docs.astral.sh/uv/getting-started/installation/
 # https://gitee.com/wangnov/uv-custom/releases
-uv venv
+uv venv --python 3.12
 uv pip install winload
 uv run winload
 uv run python -c "import shutil; print(shutil.which('winload'))"

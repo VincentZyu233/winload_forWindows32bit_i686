@@ -306,14 +306,14 @@ class UI:
         scale_label = get_graph_scale_label_unit(scale_max, self.unit)
         mode_tag = ""
         if self.fixed_max is not None:
-            mode_tag = f" [fixed: {format_speed_unit(self.fixed_max, self.unit)}]"
+            mode_tag = f" [{t('tag_fixed')}: {format_speed_unit(self.fixed_max, self.unit)}]"
         elif self.smart_max_half_life is not None:
             arrow = ""
             if smart_max_rising is True:
-                arrow = " ↑"
+                arrow = f" {t('arrow_up')}"
             elif smart_max_rising is False:
-                arrow = " ↓"
-            mode_tag = f" [smart-max {self.smart_max_half_life}s]{arrow}"
+                arrow = f" {t('arrow_down')}"
+            mode_tag = f" [{t('tag_smart_max')} {self.smart_max_half_life}s]{arrow}"
         label_text = f"{label} ({scale_label}){mode_tag}:"
         label_attr = self._color(self._get_bar_attr(label_color, bold=True))
         if self.bar_style == "fill":
@@ -503,10 +503,10 @@ class UI:
             self._safe_addstr(r, 0, title, section_attr)
             return r + 1
 
-        on_off = lambda b: "on" if b else "off"
+        on_off = lambda b: t("on") if b else t("off")
 
         # Title
-        self._safe_addstr(row, 0, "\u2550\u2550\u2550 winload Debug Info (F3) \u2550\u2550\u2550", title_attr)
+        self._safe_addstr(row, 0, t("f3_title"), title_attr)
         row += 2
 
         # Version & System
@@ -515,65 +515,65 @@ class UI:
             ver = _get_ver("winload")
         except Exception:
             ver = "unknown"
-        row = kv(row, "Version:", f"{ver} (Python edition)")
-        row = kv(row, "System:", f"{platform.system()} | {platform.machine()}")
-        row = kv(row, "Language:", get_lang())
+        row = kv(row, t("debug_version"), f"{ver} (Python edition)")
+        row = kv(row, t("debug_system"), f"{platform.system()} | {platform.machine()}")
+        row = kv(row, t("debug_language"), get_lang())
         row += 1
 
         # Parameters
-        row = section(row, "\u2550\u2550\u2550 Parameters \u2550\u2550\u2550")
-        row = kv(row, "Interval:", f"{self.interval} ms")
-        row = kv(row, "Average:", f"{self.average} s")
-        row = kv(row, "Unit:", self.unit)
-        row = kv(row, "Bar Style:", self.bar_style)
-        row = kv(row, "Emoji:", on_off(self.emoji))
-        row = kv(row, "Unicode:", on_off(self.unicode))
-        row = kv(row, "No Graph:", on_off(self.no_graph))
-        row = kv(row, "No Color:", on_off(self.no_color))
-        row = kv(row, "Hide Sep:", on_off(self.hide_separator))
+        row = section(row, t("debug_section_params"))
+        row = kv(row, t("debug_interval"), f"{self.interval} ms")
+        row = kv(row, t("debug_average"), f"{self.average} s")
+        row = kv(row, t("debug_unit"), self.unit)
+        row = kv(row, t("debug_bar_style"), self.bar_style)
+        row = kv(row, t("debug_emoji"), on_off(self.emoji))
+        row = kv(row, t("debug_unicode"), on_off(self.unicode))
+        row = kv(row, t("debug_no_graph"), on_off(self.no_graph))
+        row = kv(row, t("debug_no_color"), on_off(self.no_color))
+        row = kv(row, t("debug_hide_sep"), on_off(self.hide_separator))
         row += 1
 
         # Y-axis Scaling
-        row = section(row, "\u2550\u2550\u2550 Y-axis Scaling \u2550\u2550\u2550")
+        row = section(row, t("debug_section_yaxis"))
         if self.fixed_max is not None:
-            mode_str = f"fixed-max ({format_speed_unit(self.fixed_max, self.unit)})"
+            mode_str = t("yaxis_fixed").format(val=format_speed_unit(self.fixed_max, self.unit))
         elif self.smart_max_half_life is not None:
-            mode_str = f"smart-max (half-life: {self.smart_max_half_life}s)"
+            mode_str = t("yaxis_smart").format(sec=self.smart_max_half_life)
         else:
-            mode_str = "auto (history peak)"
-        row = kv(row, "Mode:", mode_str)
+            mode_str = t("yaxis_auto")
+        row = kv(row, t("debug_yaxis_mode"), mode_str)
 
         view = self.current_view
         if self.smart_max_half_life is not None:
-            row = kv(row, "In smooth:", format_speed_unit(
+            row = kv(row, t("debug_in_smooth"), format_speed_unit(
                 view.engine.incoming_smooth_peak, self.unit))
-            row = kv(row, "Out smooth:", format_speed_unit(
+            row = kv(row, t("debug_out_smooth"), format_speed_unit(
                 view.engine.outgoing_smooth_peak, self.unit))
         row += 1
 
         # Device
-        row = section(row, "\u2550\u2550\u2550 Device \u2550\u2550\u2550")
+        row = section(row, t("debug_section_device"))
         device_idx = self.current_device_idx % len(self.views)
-        addr = view.get_addr_str() or "(none)"
-        row = kv(row, "Name:", f"{view.name} ({device_idx + 1}/{len(self.views)})")
-        row = kv(row, "Address:", addr)
-        row = kv(row, "In Curr:", format_speed_unit(view.engine.incoming.current, self.unit))
-        row = kv(row, "Out Curr:", format_speed_unit(view.engine.outgoing.current, self.unit))
-        row = kv(row, "In Total:", format_bytes(view.engine.incoming.total))
-        row = kv(row, "Out Total:", format_bytes(view.engine.outgoing.total))
-        row = kv(row, "In Peak:", format_speed_unit(view.engine.incoming.maximum, self.unit))
-        row = kv(row, "Out Peak:", format_speed_unit(view.engine.outgoing.maximum, self.unit))
+        addr = view.get_addr_str() or t("addr_none")
+        row = kv(row, t("debug_device_name"), f"{view.name} ({device_idx + 1}/{len(self.views)})")
+        row = kv(row, t("debug_device_addr"), addr)
+        row = kv(row, t("debug_in_curr"), format_speed_unit(view.engine.incoming.current, self.unit))
+        row = kv(row, t("debug_out_curr"), format_speed_unit(view.engine.outgoing.current, self.unit))
+        row = kv(row, t("debug_in_total"), format_bytes(view.engine.incoming.total))
+        row = kv(row, t("debug_out_total"), format_bytes(view.engine.outgoing.total))
+        row = kv(row, t("debug_in_peak"), format_speed_unit(view.engine.incoming.maximum, self.unit))
+        row = kv(row, t("debug_out_peak"), format_speed_unit(view.engine.outgoing.maximum, self.unit))
         row += 1
 
         # Colors
-        row = section(row, "\u2550\u2550\u2550 Colors \u2550\u2550\u2550")
+        row = section(row, t("debug_section_colors"))
         def fmt_color(rgb_tuple, default_name):
             if rgb_tuple:
                 r, g, b = rgb_tuple
                 return f"#{r:02x}{g:02x}{b:02x}"
-            return f"{default_name} (default)"
-        row = kv(row, "In Color:", fmt_color(self.in_color_rgb, "cyan"))
-        row = kv(row, "Out Color:", fmt_color(self.out_color_rgb, "gold"))
+            return f"{default_name} {t('default_tag')}"
+        row = kv(row, t("debug_in_color"), fmt_color(self.in_color_rgb, "cyan"))
+        row = kv(row, t("debug_out_color"), fmt_color(self.out_color_rgb, "gold"))
 
         # Help bar (bottom)
         help_text = t("f3_help_bar_emoji") if self.emoji else t("f3_help_bar")
