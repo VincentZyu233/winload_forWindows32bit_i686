@@ -7,7 +7,7 @@
 ### ⬇️ Downloads
 
 
-> **For i686 (32-bit)**: Linux binary only — no DEB/RPM packages. Windows & Linux binaries are not published to npm / Scoop / AUR.
+> **For i686 (32-bit)**: On Linux, provide 32-bit binary only — no 32-bit DEB/RPM packages. On Windows & Linux, 32-bit binaries are not published to npm / Scoop / AUR.
 
 | OS / Arch | x86_64 | ARM64 | i686 (32-bit) |
 |-----------|--------|-------|---------------|
@@ -16,8 +16,8 @@
 | **macOS** | [![binary](https://img.shields.io/badge/binary-Intel-000000.svg?logo=apple)](__BASE_URL__/winload-macos-x86_64-__VERSION__) | [![binary](https://img.shields.io/badge/binary-Apple_Silicon-000000.svg?logo=apple)](__BASE_URL__/winload-macos-aarch64-__VERSION__) | *Not provided* |
 | **Android** | [![binary](https://img.shields.io/badge/binary-x64-96ed89.svg?logo=android)](__BASE_URL__/winload-android-x86_64-__VERSION__) | [![binary](https://img.shields.io/badge/binary-ARM64-168039.svg?logo=android)](__BASE_URL__/winload-android-aarch64-__VERSION__) | *Not provided* |
 
-> **Windows Binary Labels**: `msvc-npcap` = MSVC with Npcap loopback capture (requires Npcap installed, **Windows 10+**); `msvc-no-npcap` = MSVC standalone, no Npcap (**Windows 10+**); `mingw-no-npcap` = MinGW-w64 standalone, no Npcap (**Windows 10+**). For older Windows (7/8/XP/Vista), use pre-1.77 Rust builds from earlier releases.<br>
-> **Build Toolchain**: Rust 1.77+ dropped Windows 7 support. All builds require **Windows 10+**. `mingw-no-npcap` provides the best compatibility for Windows 10 32-bit.<br>
+> **Windows Binary Labels**: `msvc-npcap` = MSVC with Npcap loopback capture (requires Npcap installed, **Windows 10+**); `msvc-no-npcap` = MSVC standalone, no Npcap (**Windows 10+**); `mingw-no-npcap` = MinGW-w64 standalone, no Npcap (**Windows 10+**). For older Windows (7/8/XP/Vista), maybe need use pre-1.77 Rust builds from earlier releases? (i have not tried yet. <br>
+> **Build Toolchain**: Rust 1.77+ dropped Windows 7 support. All builds require **Windows 10+**.<br>
 
 
 ### 📥 Quick Install

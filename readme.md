@@ -269,6 +269,9 @@ On Linux and macOS, loopback traffic works out of the box — no extra flags nee
 ##### Rust Edition Preview GIF
 ![docs/preview-rust.gif](docs/preview-rust.gif)
 
+##### Terminal Recording
+<a href="https://asciinema.org/a/gZBymQAkz5ZxRbcq"><img src="https://asciinema.org/a/gZBymQAkz5ZxRbcq.svg" alt="winload demo" width="100%" /></a>
+
 ## 📦 Dependencies
 
 ### Python Edition

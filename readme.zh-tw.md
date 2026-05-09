@@ -269,6 +269,9 @@ winload --npcap
 ##### Rust 版預覽 GIF
 ![docs/preview-rust.gif](docs/preview-rust.gif)
 
+##### 終端錄製
+<a href="https://asciinema.org/a/gZBymQAkz5ZxRbcq"><img src="https://asciinema.org/a/gZBymQAkz5ZxRbcq.svg" alt="winload demo" width="100%" /></a>
+
 ## 📦 依賴
 
 ### Python 版本
