@@ -272,6 +272,8 @@ On Linux and macOS, loopback traffic works out of the box — no extra flags nee
 ##### Terminal Recording
 <a href="https://asciinema.org/a/1030894?startAt=30" target="_blank"><img src="https://asciinema.org/a/1030894.svg" alt="winload demo" width="100%" /></a>
 
+> ↑ Recorded by [asciinema](https://github.com/asciinema/asciinema)
+
 ## 📦 Dependencies
 
 ### Python Edition

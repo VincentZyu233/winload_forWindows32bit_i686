@@ -272,6 +272,8 @@ winload --npcap
 ##### 終端錄製
 <a href="https://asciinema.org/a/1030894?startAt=30" target="_blank"><img src="https://asciinema.org/a/1030894.svg" alt="winload demo" width="100%" /></a>
 
+> ↑ 使用 [asciinema](https://github.com/asciinema/asciinema) 錄製
+
 ## 📦 依賴
 
 ### Python 版本
