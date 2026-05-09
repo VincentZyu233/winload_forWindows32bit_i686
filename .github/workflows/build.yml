@@ -446,14 +446,17 @@ jobs:
 
           # ── RPM 构建 ──
           # RPM 规范不允许版本号含连字符 '-'，只允许字母、数字、'.', '_', '+', '~' 等字符。
-          # Cargo/SemVer 预发布版本用 '-'（如 0.1.8-rc.21），必须替换为 '~'（如 0.1.8~rc.21）。
+          # Cargo/SemVer 预发布版本用 '-'（如 0.1.8-rc.22），必须替换为 '~'（如 0.1.8~rc.22）。
           # '~' 在 RPM 中表示"早于"同名正式版本，语义与预发布一致。
           # DEB 自动将 '-' 转为 '~'（cargo-deb 内置处理），RPM 需要手动转换。
-          # 使用 --set-metadata 覆盖 version，无需修改 Cargo.toml。
+          # cargo generate-rpm 的 --set-metadata 无法在版本校验前覆盖 version，
+          # 因此需要临时 sed 替换 Cargo.toml 中的版本号，构建完成后 git restore 恢复。
           RPM_VERSION="${VERSION#v}"
           RPM_VERSION="${RPM_VERSION//-/~}"
+          sed -i "s/^version = \".*\"/version = \"${RPM_VERSION}\"/" Cargo.toml
           echo "📦 Building RPM package for ${{ matrix.target }}..."
-          cargo generate-rpm --target ${{ matrix.target }} -s "pkg.version=\"$RPM_VERSION\""
+          cargo generate-rpm --target ${{ matrix.target }}
+          git restore Cargo.toml
 
           echo "✅ Packages built (original names):"
           find target -name '*.deb' -o -name '*.rpm' | head -20
