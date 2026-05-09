@@ -172,15 +172,15 @@ which winload
 **DEB (Debian/Ubuntu):**
 ```bash
 # 從 GitHub Releases 下載最新 .deb 包
-sudo dpkg -i ./winload_*_amd64.deb
+sudo dpkg -i ./winload*.deb
 # 或使用 apt（自動處理依賴）
-sudo apt install ./winload_*_amd64.deb
+sudo apt install ./winload*.deb
 which winload
 ```
 
 **RPM (Fedora/RHEL):**
 ```bash
-sudo dnf install ./winload-*-1.x86_64.rpm
+sudo dnf install ./winload*.rpm
 which winload
 ```
 
@@ -270,7 +270,7 @@ winload --npcap
 ![docs/preview-rust.gif](docs/preview-rust.gif)
 
 ##### 終端錄製
-<a href="https://asciinema.org/a/gZBymQAkz5ZxRbcq"><img src="https://asciinema.org/a/gZBymQAkz5ZxRbcq.svg" alt="winload demo" width="100%" /></a>
+<a href="https://asciinema.org/a/1030894?startAt=30" target="_blank"><img src="https://asciinema.org/a/1030894.svg" alt="winload demo" width="100%" /></a>
 
 ## 📦 依賴
 

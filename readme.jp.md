@@ -172,15 +172,15 @@ which winload
 **DEB (Debian/Ubuntu):**
 ```bash
 # GitHub Releasesから最新の .deb をダウンロード
-sudo dpkg -i ./winload_*_amd64.deb
+sudo dpkg -i ./winload*.deb
 # または apt を使用（依存関係を自動解決）
-sudo apt install ./winload_*_amd64.deb
+sudo apt install ./winload*.deb
 which winload
 ```
 
 **RPM (Fedora/RHEL):**
 ```bash
-sudo dnf install ./winload-*-1.x86_64.rpm
+sudo dnf install ./winload*.rpm
 which winload
 ```
 
@@ -270,7 +270,7 @@ LinuxおよびmacOSでは、ループバックトラフィックは追加のフ�
 ![docs/preview-rust.gif](docs/preview-rust.gif)
 
 ##### ターミナル録画
-<a href="https://asciinema.org/a/gZBymQAkz5ZxRbcq"><img src="https://asciinema.org/a/gZBymQAkz5ZxRbcq.svg" alt="winload demo" width="100%" /></a>
+<a href="https://asciinema.org/a/1030894?startAt=30" target="_blank"><img src="https://asciinema.org/a/1030894.svg" alt="winload demo" width="100%" /></a>
 
 ## 📦 依存関係
 

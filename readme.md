@@ -172,15 +172,15 @@ which winload
 **DEB (Debian/Ubuntu):**
 ```bash
 # Download the latest .deb from GitHub Releases
-sudo dpkg -i ./winload_*_amd64.deb
+sudo dpkg -i ./winload*.deb
 # or use apt (auto-resolves dependencies)
-sudo apt install ./winload_*_amd64.deb
+sudo apt install ./winload*.deb
 which winload
 ```
 
 **RPM (Fedora/RHEL):**
 ```bash
-sudo dnf install ./winload-*-1.x86_64.rpm
+sudo dnf install ./winload*.rpm
 which winload
 ```
 
@@ -270,7 +270,7 @@ On Linux and macOS, loopback traffic works out of the box — no extra flags nee
 ![docs/preview-rust.gif](docs/preview-rust.gif)
 
 ##### Terminal Recording
-<a href="https://asciinema.org/a/gZBymQAkz5ZxRbcq"><img src="https://asciinema.org/a/gZBymQAkz5ZxRbcq.svg" alt="winload demo" width="100%" /></a>
+<a href="https://asciinema.org/a/1030894?startAt=30" target="_blank"><img src="https://asciinema.org/a/1030894.svg" alt="winload demo" width="100%" /></a>
 
 ## 📦 Dependencies
 
