@@ -453,7 +453,8 @@ jobs:
           # 因此需要临时 sed 替换 Cargo.toml 中的版本号，构建完成后 git restore 恢复。
           RPM_VERSION="${VERSION#v}"
           RPM_VERSION="${RPM_VERSION//-/~}"
-          sed -i "s/^version = \".*\"/version = \"${RPM_VERSION}\"/" Cargo.toml
+          echo "🔄 RPM version: ${RPM_VERSION}"
+          sed -i "s|^version = .*|version = \"${RPM_VERSION}\"|" Cargo.toml
           echo "📦 Building RPM package for ${{ matrix.target }}..."
           cargo generate-rpm --target ${{ matrix.target }}
           git restore Cargo.toml
