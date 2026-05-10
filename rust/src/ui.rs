@@ -534,8 +534,10 @@ fn draw_debug_overlay(frame: &mut Frame, area: Rect, app: &App) {
     let value_style = maybe_strip(Style::default().fg(Color::White), no_color);
 
     let kv = |key: String, val: String| -> Line<'static> {
+        let w = unicode_width::UnicodeWidthStr::width(key.as_str());
+        let pad = if w >= 14 { 1 } else { 14 - w };
         Line::from(vec![
-            Span::styled(format!("  {:<14}", key), label_style),
+            Span::styled(format!("  {key}{:<pad$}", ""), label_style),
             Span::styled(val, value_style),
         ])
     };

@@ -161,7 +161,6 @@ brew tap vincentzyuapps/tap
 brew update && brew install winload
 which winload
 ```
-> 📄 [View Homebrew formula](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 > 💡 Homebrew supports **macOS** (Intel & Apple Silicon) and **Linux** (x86_64 & ARM64).
 
 > ⚠️ These install scripts only support systems with **apt or dnf** package managers on **x86_64 / aarch64** architectures. For other platforms, use **npm** (`npm install -g @vincentzyuapps/winload`) or **Cargo** (`cargo install winload`) instead.

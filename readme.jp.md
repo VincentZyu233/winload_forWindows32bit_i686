@@ -161,7 +161,6 @@ brew tap vincentzyuapps/tap
 brew update && brew install winload
 which winload
 ```
-> 📄 [Homebrew フォーミュラを表示](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 > 💡 Homebrew は **macOS**（Intel および Apple Silicon）と **Linux**（x86_64 および ARM64）をサポートしています。
 
 > ⚠️ これらのインストールスクリプトは、**apt または dnf** パッケージマネージャーを持つ **x86_64 / aarch64** アーキテクチャのシステムのみ対応しています。その他のプラットフォームでは **npm**（`npm install -g @vincentzyuapps/winload`）または **Cargo**（`cargo install winload`）をご利用ください。
