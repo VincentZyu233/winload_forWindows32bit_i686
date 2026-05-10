@@ -124,7 +124,7 @@ fn draw_header(frame: &mut Frame, area: Rect, app: &App, show_loopback_warning: 
 
         let header_text = if app.emoji {
             format!(
-                "{} {}{} ({}/{}){} \u{1f4e1}:",
+                "{} {}{} ({}/{}){} 📡:",
                 t("device_emoji"),
                 view.info.name,
                 addr_str,

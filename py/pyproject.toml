@@ -1,6 +1,6 @@
 [project]
 name = "winload"
-version = "0.1.8-rc.26"
+version = "0.1.8-rc.27"
 description = "Network Load Monitor - nload-like TUI tool for Windows"
 readme = "readme.md"
 license = { text = "MIT" }
