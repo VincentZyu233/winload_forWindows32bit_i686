@@ -151,6 +151,8 @@ which winload
 ```
 > 📄 [查看 Gitee 安装脚本源码](https://gitee.com/vincent-zyu/winload/blob/main/docs/install_scripts/install_gitee.sh)
 
+> ⚠️ 以上两个 `curl ... | bash` 安装脚本支持 **x86_64 / aarch64** 架构上使用 **apt**（Debian/Ubuntu）、**dnf**（Fedora/RHEL）或 **Termux**（Android）的系统。其他平台请使用 **npm**（`npm install -g @vincentzyuapps/winload`）或 **Cargo**（`cargo install winload`）安装。
+
 ### macOS / Linux（Homebrew）
 > 📄 [Homebrew Formula (GitHub)](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 > 📄 [Homebrew Formula (Gitee)](https://gitee.com/vincent-zyu/homebrew-tap/blob/main/Formula/winload.rb)
@@ -162,8 +164,6 @@ brew update && brew install winload
 which winload
 ```
 > 💡 Homebrew 支持 **macOS**（Intel 和 Apple Silicon）和 **Linux**（x86_64 和 ARM64）。
-
-> ⚠️ 以上安装脚本仅适用于使用 **apt 或 dnf** 包管理器的 **x86_64 / aarch64** 架构系统。其他平台请使用 **npm**（`npm install -g @vincentzyuapps/winload`）或 **Cargo**（`cargo install winload`）安装。
 
 <details>
 <summary>手动安装</summary>

@@ -151,6 +151,8 @@ which winload
 ```
 > 📄 [View Gitee install script](https://gitee.com/vincent-zyu/winload/blob/main/docs/install_scripts/install_gitee.sh)
 
+> ⚠️ The two `curl ... | bash` install scripts above support **x86_64 / aarch64** systems with **apt** (Debian/Ubuntu), **dnf** (Fedora/RHEL), or **Termux** (Android). For other platforms, use **npm** (`npm install -g @vincentzyuapps/winload`) or **Cargo** (`cargo install winload`) instead.
+
 ### macOS / Linux (Homebrew)
 > 📄 [Homebrew Formula (GitHub)](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 > 📄 [Homebrew Formula (Gitee)](https://gitee.com/vincent-zyu/homebrew-tap/blob/main/Formula/winload.rb)
@@ -162,8 +164,6 @@ brew update && brew install winload
 which winload
 ```
 > 💡 Homebrew supports **macOS** (Intel & Apple Silicon) and **Linux** (x86_64 & ARM64).
-
-> ⚠️ These install scripts only support systems with **apt or dnf** package managers on **x86_64 / aarch64** architectures. For other platforms, use **npm** (`npm install -g @vincentzyuapps/winload`) or **Cargo** (`cargo install winload`) instead.
 
 <details>
 <summary>Manual install</summary>

@@ -151,6 +151,8 @@ which winload
 ```
 > 📄 [Gitee 설치 스크립트 소스 보기](https://gitee.com/vincent-zyu/winload/blob/main/docs/install_scripts/install_gitee.sh)
 
+> ⚠️ 위의 두 `curl ... | bash` 설치 스크립트는 **x86_64 / aarch64** 아키텍처에서 **apt**（Debian/Ubuntu）、**dnf**（Fedora/RHEL）또는 **Termux**（Android）를 사용하는 시스템을 지원합니다. 다른 플랫폼에서는 **npm**（`npm install -g @vincentzyuapps/winload`）또는 **Cargo**（`cargo install winload`）를 사용하세요.
+
 ### macOS / Linux（Homebrew）
 > 📄 [Homebrew Formula (GitHub)](https://github.com/VincentZyuApps/homebrew-tap/blob/main/Formula/winload.rb)
 > 📄 [Homebrew Formula (Gitee)](https://gitee.com/vincent-zyu/homebrew-tap/blob/main/Formula/winload.rb)
@@ -162,8 +164,6 @@ brew update && brew install winload
 which winload
 ```
 > 💡 Homebrew는 **macOS**(Intel 및 Apple Silicon)와 **Linux**(x86_64 및 ARM64)를 지원합니다.
-
-> ⚠️ 이 설치 스크립트는 **apt 또는 dnf** 패키지 관리자를 사용하는 **x86_64 / aarch64** 아키텍처 시스템에서만 지원됩니다. 다른 플랫폼에서는 **npm**(`npm install -g @vincentzyuapps/winload`) 또는 **Cargo**(`cargo install winload`)를 사용하세요.
 
 <details>
 <summary>수동 설치</summary>
