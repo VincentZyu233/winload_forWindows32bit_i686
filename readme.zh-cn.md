@@ -81,7 +81,7 @@ pip install winload
 # 推荐使用 uv：
 # https://docs.astral.sh/uv/getting-started/installation/
 # https://gitee.com/wangnov/uv-custom/releases
-uv venv --python 3.12
+uv venv --python 3.13
 uv pip install winload
 uv run winload
 uv run python -c "import shutil; print(shutil.which('winload'))"
@@ -279,7 +279,7 @@ winload --npcap
 
 | 包 | 版本 | 说明 |
 |:---|:---|:---|
-| [![Python](https://img.shields.io/badge/Python-3.12.12-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org/) | 3.12.12 | 编程语言 |
+| [![Python](https://img.shields.io/badge/Python-3.13.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org/) | 3.13.11 | 编程语言 |
 | [![psutil](https://img.shields.io/badge/psutil-≥7.0-FFD43B?style=flat-square&logo=python&logoColor=white)](https://github.com/giampaolo/psutil) | ≥7.0 | 进程和系统工具 |
 | [![windows-curses](https://img.shields.io/badge/windows--curses-≥2.0-FFD43B?style=flat-square&logo=python&logoColor=white)](https://github.com/zhirui2020/windows-curses) | ≥2.0 | Windows curses 支持 |
 

@@ -772,7 +772,7 @@ jobs:
           echo "🔑 x64 hash: $HASH_X64"
           echo "🔑 arm64 hash: $HASH_ARM64"
 
-          cat > winload.json << 'EOF'
+          cat > winload.json << EOF
           {
               "version": "${SCOOP_VERSION}",
               "description": "Network Load Monitor - nload for Windows/Linux/macOS",
@@ -796,10 +796,10 @@ jobs:
               "autoupdate": {
                   "architecture": {
                       "64bit": {
-                          "url": "https://gitee.com/vincent-zyu/winload/releases/download/v$version/winload-windows-x86_64-msvc-npcap-v$version.exe"
+                          "url": "https://gitee.com/vincent-zyu/winload/releases/download/v\$version/winload-windows-x86_64-msvc-npcap-v\$version.exe"
                       },
                       "arm64": {
-                          "url": "https://gitee.com/vincent-zyu/winload/releases/download/v$version/winload-windows-aarch64-msvc-npcap-v$version.exe"
+                          "url": "https://gitee.com/vincent-zyu/winload/releases/download/v\$version/winload-windows-aarch64-msvc-npcap-v\$version.exe"
                       }
                   }
               }
