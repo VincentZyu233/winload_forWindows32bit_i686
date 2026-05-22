@@ -1162,6 +1162,8 @@ jobs:
     name: Publish to npm
     needs: [check, release]
     if: always() && needs.check.outputs.should_publish == 'true' && (needs.release.result == 'success' || needs.release.result == 'skipped')
+    permissions:
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -1241,7 +1243,7 @@ jobs:
           PKGJSON
 
             cd "${PKG_DIR}"
-            npm publish --access public --tag "${NPM_TAG}" 2>&1 || echo "⚠️ Failed to publish ${PKG_NAME} (may already exist)"
+            npm publish --provenance --access public --tag "${NPM_TAG}" 2>&1 || echo "⚠️ Failed to publish ${PKG_NAME} (may already exist)"
             cd "$GITHUB_WORKSPACE"
           done
 
@@ -1271,7 +1273,7 @@ jobs:
 
           echo "📦 Publishing @vincentzyuapps/winload@${NPM_VERSION} (tag: ${NPM_TAG})..."
           cat package.json
-          npm publish --access public --tag "${NPM_TAG}"
+          npm publish --provenance --access public --tag "${NPM_TAG}"
 
           echo "✅ npm packages published!"
 
