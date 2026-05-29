@@ -124,3 +124,21 @@ winload uses **Npcap** as its Windows loopback capture backend:
 So yes — to monitor loopback traffic on Windows, you need to install a third-party driver. On Linux and macOS it just works out of the box, because those operating systems treated loopback as a real network device from the start. On Windows, the [Npcap](https://npcap.com/#download) project graciously fills the gap that the OS left behind.
 
 On Linux / macOS, loopback traffic is obtained directly via the [`sysinfo`](https://crates.io/crates/sysinfo) crate — no extra flags needed.
+
+## Windows Distribution Matrix
+
+| Windows release / channel | OS / Arch | `--npcap` | Accurate Windows loopback capture | Uses system Npcap | Bundles Npcap | npm | Scoop | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `winload-windows-x86_64-msvc-npcap.exe` | Windows / x86_64 | Yes | Yes, when Npcap is installed and loopback capture is enabled | Yes | No | ✅ | ✅ | MSVC build with delay-loaded `wpcap.dll` |
+| `winload-windows-x86_64-msvc-no-npcap.exe` | Windows / x86_64 | No | No | No | No | ❌ | ❌ | No Npcap support; normal NIC traffic still works |
+| `winload-windows-x86_64-mingw-no-npcap.exe` | Windows / x86_64 | No | No | No | No | ❌ | ❌ | MinGW variant without Npcap support |
+| `winload-windows-aarch64-msvc-npcap.exe` | Windows / ARM64 | Yes | Yes, when Npcap is installed and loopback capture is enabled | Yes | No | ✅ | ✅ | ARM64 MSVC build with delay-loaded `wpcap.dll` |
+| `winload-windows-aarch64-msvc-no-npcap.exe` | Windows / ARM64 | No | No | No | No | ❌ | ❌ | ARM64 build without Npcap support |
+| `winload-windows-i686-msvc-no-npcap.exe` | Windows / i686 (32-bit) | No | No | No | No | ❌ | ❌ | 32-bit MSVC build without Npcap support |
+| `winload-windows-i686-mingw-no-npcap.exe` | Windows / i686 (32-bit) | No | No | No | No | ❌ | ❌ | 32-bit MinGW build without Npcap support |
+
+### Notes
+
+- winload never bundles Npcap itself; all `npcap` builds use the Npcap installed on the user's system.
+- Delay-loading `wpcap.dll` reduces startup failures before `--npcap` is used, but it does not remove the requirement to install Npcap for loopback capture.
+- The `no-npcap` Windows builds can still monitor normal NIC traffic; they just cannot accurately capture Windows loopback traffic.

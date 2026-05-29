@@ -127,7 +127,7 @@ where win-nload # CMD
 > scoop install windows-terminal-preview
 > wtp
 > ```
-> 💡 **すべてのビルドに Windows 10+ が必要です**（Rust 1.77+ は Windows 7/8 をサポートしなくなりました）。Scoop と npm は既定で **x86_64** および **ARM64** 向けの **MSVC without Npcap** ビルドを提供するため、通常のインストールでは `wpcap.dll` は不要です。`--npcap` を使う場合は Npcap をインストールし、[GitHub Releases](https://github.com/VincentZyuApps/winload/releases) から `*-npcap` ビルドをダウンロードしてください。
+> 💡 **すべてのビルドに Windows 10+ が必要です**（Rust 1.77+ は Windows 7/8 をサポートしなくなりました）。Scoop と npm は既定で **x86_64** および **ARM64** 向けの **MSVC + Npcap** ビルドを提供します。これらのビルドは `wpcap.dll` を遅延読み込みするようになったため、`--npcap` を使う前の起動失敗リスクは下がりましたが、ループバック取得には引き続きシステムに Npcap が必要です。その他のバリアント（MinGW、Npcap なし、i686）は [GitHub Releases](https://github.com/VincentZyuApps/winload/releases) からダウンロードしてください。
 
 ### Arch Linux (AUR):
 ```bash

@@ -127,7 +127,7 @@ where win-nload # CMD
 > scoop install windows-terminal-preview
 > wtp
 > ```
-> 💡 **All builds require Windows 10+** (Rust 1.77+ dropped Windows 7/8 support). Scoop and npm provide **MSVC without Npcap** for **x86_64** and **ARM64** by default, so normal installs do not require `wpcap.dll`. To use `--npcap`, install Npcap and download an `*-npcap` build from [GitHub Releases](https://github.com/VincentZyuApps/winload/releases).
+> 💡 **All builds require Windows 10+** (Rust 1.77+ dropped Windows 7/8 support). Scoop and npm provide **MSVC + Npcap** for **x86_64** and **ARM64** by default. These builds now delay-load `wpcap.dll`, reducing startup failures before `--npcap` is used, but loopback capture still requires Npcap installed on the system. For other variants (MinGW, non-Npcap, i686), download from [GitHub Releases](https://github.com/VincentZyuApps/winload/releases).
 
 ### Arch Linux (AUR):
 ```bash
