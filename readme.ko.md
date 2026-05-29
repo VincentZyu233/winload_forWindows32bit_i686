@@ -1,4 +1,5 @@
 ![winload](https://socialify.git.ci/VincentZyu233/winload/image?custom_language=Rust&description=1&forks=1&issues=1&language=1&logo=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F250448479%3Fs%3D200%26v%3D4&name=1&owner=1&pulls=1&stargazers=1&theme=Auto)
+![onefetch](docs/images/onefetch.png)
 
 # Winload <img src="https://github.com/user-attachments/assets/62fec846-0442-47f6-bbba-78acdc8803ef" height="32px">
 
@@ -260,13 +261,13 @@ Linux 및 macOS에서는 별도의 설정 없이 루프백 트래픽 모니터�
 
 ## 🖼️ 미리보기
 #### Python 버전 미리보기
-![docs/preview-py.png](docs/preview-py.png)
+![docs/images/preview-py.png](docs/images/preview-py.png)
 
 #### Rust 버전 미리보기
-![docs/preview-rust.png](docs/preview-rust.png)
+![docs/images/preview-rust.png](docs/images/preview-rust.png)
 
 ##### Rust 버전 미리보기 GIF
-![docs/preview-rust.gif](docs/preview-rust.gif)
+![docs/images/preview-rust.gif](docs/images/preview-rust.gif)
 
 ##### 터미널 녹화
 <a href="https://asciinema.org/a/1030894?startAt=30" target="_blank"><img src="https://asciinema.org/a/1030894.svg" alt="winload demo" width="100%" /></a>
