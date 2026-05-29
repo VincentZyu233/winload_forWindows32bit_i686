@@ -127,7 +127,7 @@ where win-nload # CMD
 > scoop install windows-terminal-preview
 > wtp
 > ```
-> 💡 **所有构建均需 Windows 10+**（Rust 1.77+ 已放弃支持 Windows 7/8）。Scoop 仅提供 **x86_64** 和 **ARM64** 的 **MSVC + Npcap** 构建。如需其他变体（MinGW、无 Npcap、i686），请从 [GitHub Releases](https://github.com/VincentZyuApps/winload/releases) 下载。
+> 💡 **所有构建均需 Windows 10+**（Rust 1.77+ 已放弃支持 Windows 7/8）。Scoop 和 npm 默认提供 **x86_64** 和 **ARM64** 的 **MSVC 无 Npcap** 构建，因此普通安装不需要 `wpcap.dll`。如需使用 `--npcap`，请安装 Npcap，并从 [GitHub Releases](https://github.com/VincentZyuApps/winload/releases) 下载 `*-npcap` 构建。
 
 ### Arch Linux (AUR):
 ```bash
