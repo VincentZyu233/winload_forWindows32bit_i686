@@ -194,6 +194,9 @@ which winload
 winload              # Monitor all active network interfaces
 winload -t 200       # Set refresh interval to 200ms
 winload -d "Wi-Fi"   # Start with a specific device
+winload --title      # Show "winload <version>" as the header title
+winload --title "My Monitor" # Use a custom header title
+winload --title ""   # Keep the default device header
 winload -e           # Enable emoji decorations 🎉
 winload --npcap      # Capture 127.0.0.1 loopback traffic (Windows, requires Npcap)
 ```
@@ -205,6 +208,7 @@ winload --npcap      # Capture 127.0.0.1 loopback traffic (Windows, requires Npc
 | `-t`, `--interval <MS>` | Refresh interval in milliseconds | `500` |
 | `-a`, `--average <SEC>` | Average calculation window in seconds | `300` |
 | `-d`, `--device <NAME>` | Default device name (partial match) | — |
+| `--title [TITLE]` | Override header title: no value shows `winload <version>`; empty string keeps the default device header | — |
 | `-e`, `--emoji` | Enable emoji decorations in TUI 🎉 | off |
 | `-U`, `--unicode` | Use Unicode block characters for graph (█▓░·) | off |
 | `-u`, `--unit <UNIT>` | Display unit: `bit` or `byte` | `bit` |

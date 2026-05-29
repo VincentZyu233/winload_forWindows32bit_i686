@@ -194,6 +194,9 @@ which winload
 winload              # 監控所有活躍網路藉口
 winload -t 200       # 設定刷新間隔為 200ms
 winload -d "Wi-Fi"   # 啟動時定位到 Wi-Fi 網卡
+winload --title      # 頂部標題顯示為 "winload <版本號>"
+winload --title "我的監視器" # 使用自訂頂部標題
+winload --title ""   # 保持預設裝置標題
 winload -e           # 啟用 emoji 裝飾 🎉
 winload --npcap      # 擷取 127.0.0.1 回環流量 (Windows，需安裝 Npcap)
 ```
@@ -205,6 +208,7 @@ winload --npcap      # 擷取 127.0.0.1 回環流量 (Windows，需安裝 Npcap)
 | `-t`, `--interval <MS>` | 刷新間隔（毫秒） | `500` |
 | `-a`, `--average <SEC>` | 平均值計算視窗（秒） | `300` |
 | `-d`, `--device <NAME>` | 預設裝置名稱（模糊比對） | — |
+| `--title [TITLE]` | 覆蓋頂部標題：不帶值時顯示 `winload <版本號>`；空字串保持預設裝置標題 | — |
 | `-e`, `--emoji` | 啟用 emoji 裝飾 🎉 | 關閉 |
 | `-U`, `--unicode` | 使用 Unicode 方塊字元繪圖（█▓░·） | 關閉 |
 | `-u`, `--unit <UNIT>` | 顯示單位：`bit` 或 `byte` | `bit` |

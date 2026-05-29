@@ -23,6 +23,8 @@ from collector import Collector
 from i18n import t, set_lang, get_lang
 from ui import UI
 
+TITLE_FLAG_ONLY = "__WINLOAD_TITLE_FLAG_ONLY__"
+
 
 def get_version() -> str:
     try:
@@ -189,6 +191,15 @@ def parse_args() -> argparse.Namespace:
         help=t("help_device"),
     )
     parser.add_argument(
+        "--title",
+        type=str,
+        nargs="?",
+        const=TITLE_FLAG_ONLY,
+        default=None,
+        metavar="TITLE",
+        help=t("help_title"),
+    )
+    parser.add_argument(
         "-e",
         "--emoji",
         action="store_true",
@@ -293,6 +304,14 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def resolve_title(raw_title: str | None) -> str | None:
+    if raw_title is None or raw_title == "":
+        return None
+    if raw_title == TITLE_FLAG_ONLY:
+        return f"winload {get_version()}"
+    return raw_title
+
+
 def main_loop(stdscr: "curses.window", args: argparse.Namespace) -> None:
     """curses 主循环"""
     collector = Collector()
@@ -308,6 +327,7 @@ def main_loop(stdscr: "curses.window", args: argparse.Namespace) -> None:
     ui = UI(
         stdscr,
         collector,
+        title=resolve_title(args.title),
         emoji=args.emoji,
         unit=args.unit,
         fixed_max=fixed_max,

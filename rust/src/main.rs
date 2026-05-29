@@ -98,6 +98,10 @@ struct Args {
     #[arg(short = 'd', long = "device")]
     device: Option<String>,
 
+    /// Override header title
+    #[arg(long = "title", num_args = 0..=1, default_missing_value = "__WINLOAD_TITLE_FLAG_ONLY__", value_name = "TITLE")]
+    title: Option<Option<String>>,
+
     /// Print debug info about network interfaces and exit
     #[arg(long = "debug-info")]
     debug_info: bool,
@@ -167,6 +171,7 @@ pub struct DeviceView {
 pub struct App {
     pub views: Vec<DeviceView>,
     pub current_idx: usize,
+    pub title: Option<String>,
     pub emoji: bool,
     pub unicode: bool,
     pub unit: Unit,
@@ -221,6 +226,7 @@ impl App {
         Self {
             views,
             current_idx,
+            title: resolve_title(args),
             emoji: args.emoji,
             unicode: args.unicode,
             unit: args.unit,
@@ -370,6 +376,18 @@ fn print_system_info() {
         env!("TARGET"));
 }
 
+fn resolve_title(args: &Args) -> Option<String> {
+    match &args.title {
+        None => None,
+        Some(None) => Some(format!("winload {}", env!("CARGO_PKG_VERSION"))),
+        Some(Some(value)) if value.is_empty() => None,
+        Some(Some(value)) if value == "__WINLOAD_TITLE_FLAG_ONLY__" => {
+            Some(format!("winload {}", env!("CARGO_PKG_VERSION")))
+        }
+        Some(Some(value)) => Some(value.clone()),
+    }
+}
+
 fn pre_scan_lang() -> Lang {
     let args: Vec<String> = std::env::args().collect();
     for i in 0..args.len() {
@@ -405,6 +423,7 @@ fn build_translated_command() -> clap::Command {
         .mut_arg("interval", |a| a.help(t("help_interval")))
         .mut_arg("average", |a| a.help(t("help_average")))
         .mut_arg("device", |a| a.help(t("help_device")))
+        .mut_arg("title", |a| a.help(t("help_title")))
         .mut_arg("debug_info", |a| a.help(t("help_debug_info")))
         .mut_arg("emoji", |a| a.help(t("help_emoji")))
         .mut_arg("unicode", |a| a.help(t("help_unicode")))

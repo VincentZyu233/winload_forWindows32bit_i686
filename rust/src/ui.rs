@@ -99,12 +99,6 @@ fn pad_to_width(text: &str, width: usize) -> String {
 
 fn draw_header(frame: &mut Frame, area: Rect, app: &App, show_loopback_warning: bool, show_loopback_info: bool) {
     if let Some(view) = app.current_view() {
-        let addr_str = if !view.info.addrs.is_empty() {
-            format!(" [{}]", view.info.addrs[0])
-        } else {
-            String::new()
-        };
-
         let is_loopback = view.info.name.to_lowercase().contains("loopback");
 
         // 在 loopback 设备上追加捕获模式标记
@@ -122,26 +116,35 @@ fn draw_header(frame: &mut Frame, area: Rect, app: &App, show_loopback_warning: 
             ""
         };
 
-        let header_text = if app.emoji {
-            format!(
-                "{} {}{} ({}/{}){} 📡:",
-                t("device_emoji"),
-                view.info.name,
-                addr_str,
-                app.current_idx + 1,
-                app.views.len(),
-                mode_tag,
-            )
+        let header_text = if let Some(title) = &app.title {
+            title.clone()
         } else {
-            format!(
-                "{} {}{} ({}/{}){}:",
-                t("device"),
-                view.info.name,
-                addr_str,
-                app.current_idx + 1,
-                app.views.len(),
-                mode_tag,
-            )
+            let addr_str = if !view.info.addrs.is_empty() {
+                format!(" [{}]", view.info.addrs[0])
+            } else {
+                String::new()
+            };
+            if app.emoji {
+                format!(
+                    "{} {}{} ({}/{}){} 📡:",
+                    t("device_emoji"),
+                    view.info.name,
+                    addr_str,
+                    app.current_idx + 1,
+                    app.views.len(),
+                    mode_tag,
+                )
+            } else {
+                format!(
+                    "{} {}{} ({}/{}){}:",
+                    t("device"),
+                    view.info.name,
+                    addr_str,
+                    app.current_idx + 1,
+                    app.views.len(),
+                    mode_tag,
+                )
+            }
         };
 
         let width = area.width as usize;

@@ -44,6 +44,7 @@ class UI:
     COLOR_ERROR = 10
 
     def __init__(self, stdscr: "curses.window", collector: Collector,
+                 title: Optional[str] = None,
                  emoji: bool = False, unit: str = "bit",
                  fixed_max: Optional[float] = None, no_graph: bool = False,
                  unicode: bool = False, bar_style: str = "fill",
@@ -55,6 +56,7 @@ class UI:
         self.collector = collector
         self.current_device_idx = 0
         self.views: List[DeviceView] = []
+        self.title = title
         self.emoji = emoji
         self.unit = unit
         self.fixed_max = fixed_max
@@ -180,18 +182,21 @@ class UI:
         row = 0
 
         # ── 头部: Device name [ip] (n/m): ──
-        addr = view.get_addr_str()
-        addr_str = f" [{addr}]" if addr else ""
-        if self.emoji:
-            header = (
-                f"{t('device_emoji')} {view.name}{addr_str} "
-                f"({device_idx + 1}/{len(self.views)}) 📡:"
-            )
+        if self.title is not None:
+            header = self.title
         else:
-            header = (
-                f"{t('device')} {view.name}{addr_str} "
-                f"({device_idx + 1}/{len(self.views)}):"
-            )
+            addr = view.get_addr_str()
+            addr_str = f" [{addr}]" if addr else ""
+            if self.emoji:
+                header = (
+                    f"{t('device_emoji')} {view.name}{addr_str} "
+                    f"({device_idx + 1}/{len(self.views)}) 📡:"
+                )
+            else:
+                header = (
+                    f"{t('device')} {view.name}{addr_str} "
+                    f"({device_idx + 1}/{len(self.views)}):"
+                )
         header_attr = self._color(self._get_bar_attr(self.COLOR_HEADER, bold=True))
         if self.bar_style == "fill":
             header = header.ljust(max_x - 1)

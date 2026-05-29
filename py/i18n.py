@@ -18,6 +18,7 @@ _STRINGS: dict[str, dict[str, str]] = {
             "[default: 300]"
         ),
         "help_device": "Default device name (partial match)",
+        "help_title": "Override header title: no value shows winload <version>; empty string keeps default device header",
         "help_emoji": "Enable emoji decorations in TUI 🎉",
         "help_unit": "Display unit: bit (default) or byte",
         "help_max": (
@@ -130,6 +131,7 @@ _STRINGS: dict[str, dict[str, str]] = {
             "[默认: 300]"
         ),
         "help_device": "默认网卡名称（支持部分匹配）",
+        "help_title": "覆盖顶部标题：不带值时显示 winload <版本号>；空字符串保持默认设备标题",
         "help_emoji": "启用 emoji 装饰模式 🎉",
         "help_unit": "显示单位：bit（默认）或 byte",
         "help_max": (
@@ -242,6 +244,7 @@ _STRINGS: dict[str, dict[str, str]] = {
             "[預設: 300]"
         ),
         "help_device": "預設網路卡名稱（支援部分匹配）",
+        "help_title": "覆蓋頂部標題：不帶值時顯示 winload <版本號>；空字串保持預設裝置標題",
         "help_emoji": "啟用 emoji 裝飾模式 🎉",
         "help_unit": "顯示單位：bit（預設）或 byte",
         "help_max": (
