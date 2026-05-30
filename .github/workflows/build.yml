@@ -146,9 +146,5 @@ jobs:
         run: |
           $version = "${{ needs.check.outputs.version }}"
           $asset = "dist/winload-windows-i686-mingw-no-npcap.exe"
-          $notes = @"
-Legacy Windows 7 build for 32-bit VMware testing.
-
-Commit: ${{ github.sha }}
-"@
+          $notes = "Legacy Windows 7 build for 32-bit VMware testing. Commit: ${{ github.sha }}"
           gh release create $version $asset --title $version --notes $notes
