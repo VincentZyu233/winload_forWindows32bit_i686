@@ -20,12 +20,12 @@
 
 ## 关键词
 
-| commit 关键词 | 构建 | 说明 |
-|---|---:|---|
-| `build action` | ✅ | 目前作为 legacy 构建的通用别名 |
-| `build legacy` | ✅ | 明确表示旧版 Windows 7 构建 |
+| commit 关键词 | 构建 | Release | 说明 |
+|---|---:|---:|---|
+| `build action` | ✅ | ❌ | 只构建，不发 Release |
+| `build release` | ✅ | ✅ | 构建并创建 GitHub Release |
 
-这两个关键词现在触发的是同一个单产物。做 Win7 VM 测试时，推荐直接用 `build legacy`。
+如果你想让 CI 发 Release，就用 `build release`。
 
 ## Rust 和工具链
 
@@ -40,11 +40,11 @@
 ## 使用示例
 
 ```bash
-# 走 legacy 线
-git commit -m "ci: test legacy build (build legacy)"
+# 只构建
+git commit -m "ci: test build only (build action)"
 
-# 同一条构建线，保留一个通用别名
-git commit -m "ci: verify workflow (build action)"
+# 构建并发 Release
+git commit -m "ci: test release pipeline (build release)"
 ```
 
 ## 构建结果

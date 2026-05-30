@@ -20,12 +20,12 @@ For push events, commit message keywords control whether the job runs.
 
 ## Keywords
 
-| Commit message keyword | Build | Notes |
-|---|---:|---|
-| `build action` | ✅ | Alias for the legacy build path for now |
-| `build legacy` | ✅ | Explicit legacy Windows 7 build |
+| Commit message keyword | Build | Release | Notes |
+|---|---:|---:|---|
+| `build action` | ✅ | ❌ | Build only |
+| `build release` | ✅ | ✅ | Build and create GitHub Release |
 
-Both keywords currently trigger the same single artifact. `build legacy` is the recommended one for VM testing.
+`build release` is the keyword to use when you want CI to publish a GitHub Release.
 
 ## Rust and toolchain
 
@@ -41,10 +41,10 @@ That combination is the most practical choice for a Win7 32-bit test VM.
 
 ```bash
 # Build from a normal commit
-git commit -m "ci: test legacy build (build legacy)"
+git commit -m "ci: test build only (build action)"
 
-# Same build, kept as a generic CI trigger alias
-git commit -m "ci: verify workflow (build action)"
+# Build and create release
+git commit -m "ci: test release pipeline (build release)"
 ```
 
 ## Output

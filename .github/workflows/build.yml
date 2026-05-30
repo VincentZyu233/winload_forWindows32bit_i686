@@ -1,4 +1,4 @@
-name: Build Legacy Windows 7 Artifact
+name: Build Windows 7 Legacy Artifact
 
 on:
   push:
@@ -8,14 +8,14 @@ on:
       mode:
         description: Build mode
         required: false
-        default: legacy
+        default: action
         type: choice
         options:
-          - legacy
           - action
+          - release
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   check:
@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       should_build: ${{ steps.flags.outputs.should_build }}
+      should_release: ${{ steps.flags.outputs.should_release }}
       version: ${{ steps.flags.outputs.version }}
       mode: ${{ steps.flags.outputs.mode }}
     steps:
@@ -41,18 +42,23 @@ jobs:
 
           MODE="legacy"
           SHOULD_BUILD=false
+          SHOULD_RELEASE=false
 
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             if [ -n "$DISPATCH_MODE" ]; then
               MODE="$DISPATCH_MODE"
             fi
             SHOULD_BUILD=true
+            if [ "$MODE" = "release" ]; then
+              SHOULD_RELEASE=true
+            fi
           else
             MSG="$COMMIT_MSG"
-            if echo "$MSG" | grep -qiE 'build action|build legacy'; then
+            if echo "$MSG" | grep -qiE 'build action|build release'; then
               SHOULD_BUILD=true
-              if echo "$MSG" | grep -qi 'build legacy'; then
-                MODE="legacy"
+              if echo "$MSG" | grep -qi 'build release'; then
+                MODE="release"
+                SHOULD_RELEASE=true
               else
                 MODE="action"
               fi
@@ -61,10 +67,11 @@ jobs:
 
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
           echo "should_build=$SHOULD_BUILD" >> "$GITHUB_OUTPUT"
+          echo "should_release=$SHOULD_RELEASE" >> "$GITHUB_OUTPUT"
           echo "📋 Flags: build=$SHOULD_BUILD mode=$MODE"
 
   build:
-    name: Build legacy i686 mingw
+    name: Build i686 mingw
     needs: check
     if: needs.check.outputs.should_build == 'true'
     runs-on: windows-latest
@@ -118,3 +125,30 @@ jobs:
           name: winload-windows-i686-mingw-no-npcap
           path: dist/winload-windows-i686-mingw-no-npcap.exe
           if-no-files-found: error
+
+      - name: Delete existing GitHub release
+        if: needs.check.outputs.should_release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $version = "${{ needs.check.outputs.version }}"
+          gh release view $version *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release delete $version --yes --cleanup-tag | Out-Null
+          }
+
+      - name: Create GitHub release
+        if: needs.check.outputs.should_release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $version = "${{ needs.check.outputs.version }}"
+          $asset = "dist/winload-windows-i686-mingw-no-npcap.exe"
+          $notes = @"
+Legacy Windows 7 build for 32-bit VMware testing.
+
+Commit: ${{ github.sha }}
+"@
+          gh release create $version $asset --title $version --notes $notes
