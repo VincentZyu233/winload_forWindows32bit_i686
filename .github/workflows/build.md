@@ -23,6 +23,7 @@ For push events, commit message keywords control whether the job runs.
 | Commit message keyword | Build | Release | Notes |
 |---|---:|---:|---|
 | `build action` | ✅ | ❌ | Build only |
+| `build legacy` | ✅ | ❌ | Build only, legacy alias |
 | `build release` | ✅ | ✅ | Build and create GitHub Release |
 
 `build release` is the keyword to use when you want CI to publish a GitHub Release.

@@ -1,5 +1,8 @@
 name: Build Windows 7 Legacy Artifact
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
     branches: [main]
@@ -28,7 +31,7 @@ jobs:
       mode: ${{ steps.flags.outputs.mode }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Debug directory structure
         run: |
@@ -64,7 +67,7 @@ jobs:
             fi
           else
             MSG="$COMMIT_MSG"
-            if echo "$MSG" | grep -qiE 'build action|build release'; then
+            if echo "$MSG" | grep -qiE 'build action|build legacy|build release'; then
               SHOULD_BUILD=true
               if echo "$MSG" | grep -qi 'build release'; then
                 MODE="release"
@@ -87,7 +90,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -134,7 +137,7 @@ jobs:
           Copy-Item "rust/target/i686-pc-windows-gnu/release/winload.exe" "dist/winload-windows-i686-mingw-no-npcap.exe"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: winload-windows-i686-mingw-no-npcap
           path: dist/winload-windows-i686-mingw-no-npcap.exe
@@ -144,21 +147,19 @@ jobs:
         if: needs.check.outputs.should_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: pwsh
         run: |
-          $version = "${{ needs.check.outputs.version }}"
-          gh release view $version 2>$null
-          if ($LASTEXITCODE -eq 0) {
-            gh release delete $version --yes --cleanup-tag | Out-Null
-          }
+          VERSION="${{ needs.check.outputs.version }}"
+          echo "🗑️ Cleaning up existing release/tag: $VERSION"
+          gh release delete "$VERSION" --yes --cleanup-tag 2>/dev/null || echo "No existing release to delete"
+          sleep 3
 
       - name: Create GitHub release
         if: needs.check.outputs.should_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: pwsh
         run: |
-          $version = "${{ needs.check.outputs.version }}"
-          $asset = "dist/winload-windows-i686-mingw-no-npcap.exe"
-          $notes = "Legacy Windows 7 build for 32-bit VMware testing. Commit: ${{ github.sha }}"
-          gh release create $version $asset --title $version --notes $notes
+          VERSION="${{ needs.check.outputs.version }}"
+          gh release create "$VERSION" \
+            "dist/winload-windows-i686-mingw-no-npcap.exe" \
+            --title "$VERSION" \
+            --notes "Legacy Windows 7 build for 32-bit VMware testing. Commit: ${{ github.sha }}"

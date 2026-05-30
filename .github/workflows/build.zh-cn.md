@@ -23,6 +23,7 @@
 | commit 关键词 | 构建 | Release | 说明 |
 |---|---:|---:|---|
 | `build action` | ✅ | ❌ | 只构建，不发 Release |
+| `build legacy` | ✅ | ❌ | 只构建，旧版触发别名 |
 | `build release` | ✅ | ✅ | 构建并创建 GitHub Release |
 
 如果你想让 CI 发 Release，就用 `build release`。
