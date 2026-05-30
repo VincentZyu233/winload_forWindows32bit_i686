@@ -85,6 +85,7 @@ jobs:
           targets: i686-pc-windows-gnu
 
       - name: Setup MSYS2 for MinGW32
+        id: msys2
         uses: msys2/setup-msys2@v2
         with:
           update: true
@@ -95,11 +96,12 @@ jobs:
       - name: Add MinGW32 to PATH
         shell: pwsh
         run: |
-          "C:\msys64\mingw32\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          "C:\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          "CARGO_TARGET_I686_PC_WINDOWS_GNU_LINKER=C:\msys64\mingw32\bin\gcc.exe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "CC_i686_pc_windows_gnu=C:\msys64\mingw32\bin\gcc.exe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "AR_i686_pc_windows_gnu=C:\msys64\mingw32\bin\ar.exe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $msys2 = "${{ steps.msys2.outputs.msys2-location }}"
+          "$msys2\mingw32\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "$msys2\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          "CARGO_TARGET_I686_PC_WINDOWS_GNU_LINKER=$msys2\mingw32\bin\gcc.exe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "CC_i686_pc_windows_gnu=$msys2\mingw32\bin\gcc.exe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "AR_i686_pc_windows_gnu=$msys2\mingw32\bin\ar.exe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Print tool versions
         shell: pwsh
