@@ -1,0 +1,5 @@
+[build]
+rustflags = ["-C", "link-arg=/SUBSYSTEM:CONSOLE", "-C", "target-feature=+crt-static"]
+
+[target.i686-pc-windows-gnu]
+rustflags = ["-C", "link-arg=-lwinmm", "-C", "link-arg=-lws2_32", "-C", "link-arg=-liphlpapi"]
