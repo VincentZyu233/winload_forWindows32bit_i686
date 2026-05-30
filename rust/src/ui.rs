@@ -60,9 +60,13 @@ pub fn draw(frame: &mut Frame, app: &App) {
 
     // Calculate base header height:
     // - 1 line for device always
+    // - +1 if title is present
     // - +1 if there are warnings/info
     // - +1 if separator is not hidden
     let mut header_height = 1; // device line
+    if app.title.is_some() {
+        header_height += 1; // title line
+    }
     if show_loopback_warning || show_loopback_info {
         header_height += 1; // warning/info line
     }
@@ -97,6 +101,25 @@ fn pad_to_width(text: &str, width: usize) -> String {
     }
 }
 
+/// 根据对齐方式对齐文本
+fn align_text(text: &str, width: usize, align: &crate::TitleAlign, fill: bool) -> String {
+    let text_w = str_display_width(text);
+    let pad_total = width.saturating_sub(text_w);
+    let (pad_l, pad_r) = match align {
+        crate::TitleAlign::Left => (0, pad_total),
+        crate::TitleAlign::Right => (pad_total, 0),
+        crate::TitleAlign::Center => {
+            let l = pad_total / 2;
+            (l, pad_total - l)
+        }
+    };
+    if fill {
+        format!("{}{}{}", " ".repeat(pad_l), text, " ".repeat(pad_r))
+    } else {
+        format!("{}{}", " ".repeat(pad_l), text)
+    }
+}
+
 fn draw_header(frame: &mut Frame, area: Rect, app: &App, show_loopback_warning: bool, show_loopback_info: bool) {
     if let Some(view) = app.current_view() {
         let is_loopback = view.info.name.to_lowercase().contains("loopback");
@@ -116,39 +139,6 @@ fn draw_header(frame: &mut Frame, area: Rect, app: &App, show_loopback_warning: 
             ""
         };
 
-        let header_text = if let Some(title) = &app.title {
-            title.clone()
-        } else {
-            let addr_str = if !view.info.addrs.is_empty() {
-                format!(" [{}]", view.info.addrs[0])
-            } else {
-                String::new()
-            };
-            if app.emoji {
-                format!(
-                    "{} {}{} ({}/{}){} 📡:",
-                    t("device_emoji"),
-                    view.info.name,
-                    addr_str,
-                    app.current_idx + 1,
-                    app.views.len(),
-                    mode_tag,
-                )
-            } else {
-                format!(
-                    "{} {}{} ({}/{}){}:",
-                    t("device"),
-                    view.info.name,
-                    addr_str,
-                    app.current_idx + 1,
-                    app.views.len(),
-                    mode_tag,
-                )
-            }
-        };
-
-        let width = area.width as usize;
-
         let header_style = maybe_strip(match app.bar_style {
             BarStyle::Fill => Style::default()
                 .bg(Color::White)
@@ -163,15 +153,47 @@ fn draw_header(frame: &mut Frame, area: Rect, app: &App, show_loopback_warning: 
                 .add_modifier(Modifier::BOLD),
         }, app.no_color);
 
-        let header_display = if app.bar_style == BarStyle::Fill {
-            pad_to_width(&header_text, width)
+        let mut lines = vec![];
+
+        // Add title line if present
+        if let Some(title) = &app.title {
+            let title_display = align_text(title, width, &app.title_align, app.bar_style == BarStyle::Fill);
+            lines.push(Line::from(Span::styled(title_display, header_style)));
+        }
+
+        // Always show device header
+        let addr_str = if !view.info.addrs.is_empty() {
+            format!(" [{}]", view.info.addrs[0])
         } else {
-            header_text
+            String::new()
         };
-
-        let header = Line::from(Span::styled(header_display, header_style));
-
-        let mut lines = vec![header];
+        let device_header = if app.emoji {
+            format!(
+                "{} {}{} ({}/{}){} 📡:",
+                t("device_emoji"),
+                view.info.name,
+                addr_str,
+                app.current_idx + 1,
+                app.views.len(),
+                mode_tag,
+            )
+        } else {
+            format!(
+                "{} {} ({}/{}){}:",
+                t("device"),
+                view.info.name,
+                addr_str,
+                app.current_idx + 1,
+                app.views.len(),
+                mode_tag,
+            )
+        };
+        let device_display = if app.bar_style == BarStyle::Fill {
+            pad_to_width(&device_header, width)
+        } else {
+            device_header
+        };
+        lines.push(Line::from(Span::styled(device_display, header_style)));
         
         if show_loopback_warning {
             let warn_text = t("loopback_warning");
