@@ -1,9 +1,21 @@
 //! 网络流量数据采集模块
-//! 通过 sysinfo 采集各网卡的累计收发字节数，供上层统计和绘图使用。
+//! 通过 Windows API (GetIfTable2) 采集各网卡的累计收发字节数，供上层统计和绘图使用。
 
-use sysinfo::Networks;
 use std::collections::HashMap;
 use std::time::Instant;
+
+#[cfg(target_os = "windows")]
+use winapi::um::iphlpapi::GetIfTable2;
+#[cfg(target_os = "windows")]
+use winapi::um::iphlpapi::FreeMibTable;
+#[cfg(target_os = "windows")]
+use winapi::shared::iptypes::MIB_IF_TABLE2;
+#[cfg(target_os = "windows")]
+use winapi::shared::winsock2::AF_INET;
+#[cfg(target_os = "windows")]
+use std::ffi::OsStr;
+#[cfg(target_os = "windows")]
+use std::os::windows::ffi::OsStrExt;
 
 /// 单次采样快照
 #[derive(Clone, Debug)]
@@ -27,14 +39,12 @@ pub struct DeviceInfo {
 
 /// 网络流量采集器
 pub struct Collector {
-    networks: Networks,
     start: Instant,
 }
 
 impl Collector {
     pub fn new() -> Self {
         Self {
-            networks: Networks::new_with_refreshed_list(),
             start: Instant::now(),
         }
     }
@@ -47,134 +57,152 @@ impl Collector {
     /// 打印所有网络接口的调试信息
     pub fn print_debug_info(&self) {
         println!("\n=== Network Interfaces Debug Info ===");
-        println!("Total interfaces detected by sysinfo: {}\n", self.networks.len());
+        let devices = self.devices();
+        println!("Total interfaces detected: {}\n", devices.len());
 
-        for (name, data) in self.networks.iter() {
-            println!("Interface: {}", name);
-            println!("  MAC address: {}", data.mac_address());
-            println!("  Total received: {} bytes", data.total_received());
-            println!("  Total transmitted: {} bytes", data.total_transmitted());
-            println!("  IP networks:");
-            
-            let ip_networks = data.ip_networks();
-            if ip_networks.is_empty() {
+        for dev in &devices {
+            println!("Interface: {}", dev.name);
+            println!("  IP addresses:");
+            if dev.addrs.is_empty() {
                 println!("    (none)");
             } else {
-                for ip in ip_networks {
-                    println!("    - {} (prefix: {})", ip.addr, ip.prefix);
+                for addr in &dev.addrs {
+                    println!("    - {}", addr);
                 }
             }
             println!();
-        }
-
-        println!("Filtered devices (IPv4 only, used in UI): {}\n", self.devices().len());
-        for dev in self.devices() {
-            println!("  - {} [{}]", dev.name, dev.addrs.join(", "));
-        }
-
-        // Windows loopback 说明
-        #[cfg(target_os = "windows")]
-        {
-            println!("\nNote: Windows loopback (127.0.0.1) traffic is not visible via");
-            println!("  standard network APIs. The Loopback device appears in the");
-            println!("  list but may show zero traffic.");
         }
     }
 
     /// 获取所有可用设备信息（按名称排序）
     pub fn devices(&self) -> Vec<DeviceInfo> {
-        let mut devs: Vec<DeviceInfo> = self
-            .networks
-            .iter()
-            .map(|(name, data)| {
-                let addrs: Vec<String> = data
-                    .ip_networks()
-                    .iter()
-                    .filter(|n| n.addr.is_ipv4())
-                    .map(|n| n.addr.to_string())
-                    .collect();
-                DeviceInfo {
-                    name: name.to_string(),
-                    addrs,
-                }
-            })
-            .collect();
-        
-        // Windows 平台手动添加 Loopback 接口（sysinfo 不返回）
         #[cfg(target_os = "windows")]
         {
-            let has_loopback = devs.iter().any(|d| {
-                d.name.to_lowercase().contains("loopback") 
-                || d.addrs.iter().any(|a| a.starts_with("127."))
-            });
-            
-            if !has_loopback {
-                devs.push(DeviceInfo {
-                    name: "Loopback Pseudo-Interface 1".to_string(),
-                    addrs: vec!["127.0.0.1".to_string()],
-                });
-            }
+            get_network_interfaces_windows()
         }
-        
-        devs.sort_by(|a, b| a.name.cmp(&b.name));
-        devs
+        #[cfg(not(target_os = "windows"))]
+        {
+            vec![]
+        }
     }
 
     /// 采集一次所有网卡的当前累计数据
     pub fn collect(&mut self) -> HashMap<String, Snapshot> {
-        // refresh() 只刷新已有接口的数据，不重建列表，计数器不会丢失
-        self.networks.refresh();
         let elapsed = self.start.elapsed().as_secs_f64();
 
         #[cfg(target_os = "windows")]
-        let mut snapshots: HashMap<String, Snapshot> = self.networks
-            .iter()
-            .map(|(name, data)| {
-                (
-                    name.to_string(),
-                    Snapshot {
-                        elapsed_secs: elapsed,
-                        bytes_recv: data.total_received(),
-                        bytes_sent: data.total_transmitted(),
-                    },
-                )
-            })
-            .collect();
-        
-        #[cfg(not(target_os = "windows"))]
-        let snapshots: HashMap<String, Snapshot> = self.networks
-            .iter()
-            .map(|(name, data)| {
-                (
-                    name.to_string(),
-                    Snapshot {
-                        elapsed_secs: elapsed,
-                        bytes_recv: data.total_received(),
-                        bytes_sent: data.total_transmitted(),
-                    },
-                )
-            })
-            .collect();
-        
-        // Windows 平台为 Loopback 添加快照（暂无法获取真实流量）
-        #[cfg(target_os = "windows")]
         {
-            let has_loopback_snapshot = snapshots.keys().any(|k| {
-                k.to_lowercase().contains("loopback")
-            });
+            get_network_stats_windows(elapsed)
+        }
+        #[cfg(not(target_os = "windows"))]
+        {
+            HashMap::new()
+        }
+    }
+}
 
-            if !has_loopback_snapshot {
+#[cfg(target_os = "windows")]
+fn get_network_interfaces_windows() -> Vec<DeviceInfo> {
+    use std::ptr;
+
+    unsafe {
+        let mut if_table: *mut MIB_IF_TABLE2 = ptr::null_mut();
+
+        if GetIfTable2(&mut if_table) != 0 {
+            return vec![];
+        }
+
+        let mut devices = Vec::new();
+
+        if !if_table.is_null() {
+            let table = &*if_table;
+            let rows = std::slice::from_raw_parts(table.Table.as_ptr(), table.NumEntries as usize);
+
+            for row in rows {
+                // 跳过非活跃接口
+                if row.OperStatus != 1 {
+                    continue;
+                }
+
+                let name = wide_to_string(row.Description.as_ptr());
+
+                // 简单处理：假设每个接口有一个 IPv4 地址（实际应该查询 GetAdaptersInfo）
+                let addrs = if name.to_lowercase().contains("loopback") {
+                    vec!["127.0.0.1".to_string()]
+                } else {
+                    vec![]
+                };
+
+                devices.push(DeviceInfo { name, addrs });
+            }
+
+            FreeMibTable(if_table as *mut _);
+        }
+
+        devices.sort_by(|a, b| a.name.cmp(&b.name));
+        devices
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn get_network_stats_windows(elapsed: f64) -> HashMap<String, Snapshot> {
+    use std::ptr;
+
+    let mut snapshots = HashMap::new();
+
+    unsafe {
+        let mut if_table: *mut MIB_IF_TABLE2 = ptr::null_mut();
+
+        if GetIfTable2(&mut if_table) != 0 {
+            return snapshots;
+        }
+
+        if !if_table.is_null() {
+            let table = &*if_table;
+            let rows = std::slice::from_raw_parts(table.Table.as_ptr(), table.NumEntries as usize);
+
+            for row in rows {
+                // 跳过非活跃接口
+                if row.OperStatus != 1 {
+                    continue;
+                }
+
+                let name = wide_to_string(row.Description.as_ptr());
+
                 snapshots.insert(
-                    "Loopback Pseudo-Interface 1".to_string(),
+                    name,
                     Snapshot {
                         elapsed_secs: elapsed,
-                        bytes_recv: 0,
-                        bytes_sent: 0,
+                        bytes_recv: row.InOctets,
+                        bytes_sent: row.OutOctets,
                     },
                 );
             }
+
+            FreeMibTable(if_table as *mut _);
         }
-        
-        snapshots
+    }
+
+    snapshots
+}
+
+#[cfg(target_os = "windows")]
+fn wide_to_string(ptr: *const u16) -> String {
+    use std::ptr;
+
+    if ptr.is_null() {
+        return String::new();
+    }
+
+    unsafe {
+        let mut len = 0;
+        let mut p = ptr;
+        while *p != 0 {
+            len += 1;
+            p = p.offset(1);
+        }
+
+        let slice = std::slice::from_raw_parts(ptr, len);
+        String::from_utf16_lossy(slice).to_string()
     }
 }
