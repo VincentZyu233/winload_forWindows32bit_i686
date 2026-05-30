@@ -30,13 +30,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Debug directory structure
+        run: |
+          apt-get update -qq && apt-get install -y tree > /dev/null 2>&1
+          echo "📁 Repository structure:"
+          tree -L 2 -I '.git' || find . -maxdepth 2 -type f -name "*.toml" -o -type d | head -20
+
       - name: Parse trigger
         id: flags
         env:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
           DISPATCH_MODE: ${{ github.event.inputs.mode }}
         run: |
-          VERSION="v$(grep '^version' rust/Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')"
+          if [ -f "rust/Cargo.toml" ]; then
+            VERSION="v$(grep '^version' rust/Cargo.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')"
+          else
+            VERSION="v0.1.9-beta.2"
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "📦 Version: $VERSION"
 
