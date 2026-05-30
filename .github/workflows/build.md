@@ -1,350 +1,58 @@
-# Build & Release Workflow
+# Build Workflow
 
-> **[📖 English](build.md)**
-> **[📖 简体中文(大陆)](build.zh-cn.md)**
-> **[📖 繁體中文(台灣)](build.zh-tw.md)**
+## Overview
 
-## 📋 Overview
+This workflow is intentionally small: it builds one legacy Windows artifact only.
 
-The CI/CD pipeline is driven entirely by **commit message keywords**. Push to `main` with the right keyword and GitHub Actions takes care of the rest.
+- Target: `i686-pc-windows-gnu`
+- Features: `--no-default-features`
+- Output: `winload-windows-i686-mingw-no-npcap.exe`
+- Intended test host: Windows 7 32-bit VM
 
-## 🔑 Keywords
+## Triggers
 
-| Keyword in commit message | Build (8 platforms) | GitHub Release | Scoop / AUR / npm | PyPI | crates.io | Benchmark |
-|---------------------------|:---:|:---:|:---:|:---:|:---:|:---:|
-| `build action` | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| `build release` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| `build publish` | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| `publish from release` | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| `pypi publish` | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
-| `crates publish` | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
-| `run benchmark` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+The workflow runs on:
 
+- `push` to `main`
+- manual `workflow_dispatch`
 
-> **Note:** `publish from release` fetches binaries from an existing Release without rebuilding. `build publish` does the full pipeline.
+For push events, commit message keywords control whether the job runs.
 
-> **Note:** Pull Requests always trigger a build (no release or publish). Commit message keywords are **ignored** for PRs — the workflow unconditionally sets `should_build=true`, `should_release=false`, `should_publish=false` and skips keyword parsing entirely.
+## Keywords
 
-## 🚀 Usage Examples
+| Commit message keyword | Build | Notes |
+|---|---:|---|
+| `build action` | ✅ | Alias for the legacy build path for now |
+| `build legacy` | ✅ | Explicit legacy Windows 7 build |
+
+Both keywords currently trigger the same single artifact. `build legacy` is the recommended one for VM testing.
+
+## Rust and toolchain
+
+The workflow uses:
+
+- `stable` Rust toolchain
+- `i686-pc-windows-gnu` target
+- MSYS2 MinGW32 toolchain
+
+That combination is the most practical choice for a Win7 32-bit test VM.
+
+## Usage examples
 
 ```bash
-# ============================================================
-# Single keyword
-# ============================================================
+# Build from a normal commit
+git commit -m "ci: test legacy build (build legacy)"
 
-# Just build, verify compilation across all platforms
-git commit --allow-empty -m "ci: test cross-compile (build action)"
-
-# Run benchmark only
-git commit --allow-empty -m "test: verify performance (run benchmark)"
-
-# Build + create GitHub Release (no package manager publish)
-git commit -m "release: v0.2.0 (build release)"
-
-# Only update Scoop bucket from the latest existing Release (no rebuild)
-git commit --allow-empty -m "ci: update scoop (publish from release)"
-
-# Publish to crates.io only (no build, no release)
-git commit --allow-empty -m "release: v0.2.0 (crates publish)"
-
-# Publish to PyPI only (no build, no release)
-git commit --allow-empty -m "release: v0.2.0 (pypi publish)"
-
-# Full pipeline: build + release + publish to Scoop/AUR/npm
-git commit -m "release: v0.2.0 (build publish)"
-
-# ============================================================
-# Two keywords
-# ============================================================
-
-# Build + release + Scoop/AUR/npm + crates.io
-git commit --allow-empty -m "release: v0.2.0 (build publish, crates publish)"
-
-# PyPI + crates.io (no build, no release)
-git commit --allow-empty -m "release: v0.2.0 (pypi publish, crates publish)"
-
-# Build + release + Scoop/AUR/npm + PyPI
-git commit --allow-empty -m "release: v0.2.0 (build publish, pypi publish)"
-
-# ============================================================
-# Three keywords
-# ============================================================
-
-# Full pipeline: build + release + Scoop/AUR/npm + PyPI + crates.io
-git commit --allow-empty -m "release: v0.2.0 (build publish, pypi publish, crates publish)"
-
-# ============================================================
-# Regular commits (no build, no publish)
-# ============================================================
-
-# Just update documentation
-git commit -m "docs: update README"
-
-# Fix a bug
-git commit -m "fix: resolve network interface detection issue"
-
-# Add a new feature
-git commit -m "feat: add dark mode support"
+# Same build, kept as a generic CI trigger alias
+git commit -m "ci: verify workflow (build action)"
 ```
 
-## 🏗️ Build Targets (Rust)
+## Output
 
-| Platform | Architecture | Target | Notes |
-|----------|:---:|--------|-------|
-| Windows | x64 (MSVC, npcap) | `x86_64-pc-windows-msvc` | With Npcap capture support, built natively with MSVC, Windows 7+ |
-| Windows | x64 (MSVC, no-npcap) | `x86_64-pc-windows-msvc` | Standalone without Npcap (`--no-default-features`), MSVC, Windows 7+ |
-| Windows | x64 (MinGW, no-npcap) | `x86_64-pc-windows-gnu` | MinGW-w64 standalone, no Npcap, for legacy Windows XP/Vista/7+ |
-| Windows | ARM64 (MSVC, npcap) | `aarch64-pc-windows-msvc` | With Npcap capture, cross-compiled with MSVC, Windows 7+ (Snapdragon X/ Surface Pro X) |
-| Windows | ARM64 (MSVC, no-npcap) | `aarch64-pc-windows-msvc` | Standalone without Npcap (`--no-default-features`), MSVC, Windows 7+ |
-| Windows | x86 (MSVC, no-npcap) | `i686-pc-windows-msvc` | 32-bit standalone MSVC, no Npcap, Windows 7+ |
-| Windows | x86 (i686 MinGW, no-npcap) | `i686-pc-windows-gnu` | 32-bit MinGW-w64 standalone, no Npcap, for legacy Windows XP/Vista/7+ |
-| Linux | x64 | `x86_64-unknown-linux-musl` | Built on Ubuntu runner with musl static linking, mainly for all x64 Linux distros (most cloud servers) |
-| Linux | ARM64 | `aarch64-unknown-linux-gnu` | Cross-compiled on ubuntu-22.04 with gcc-aarch64, mainly for ARM64 servers / SBCs (RPi etc.) |
-| macOS | x64 | `x86_64-apple-darwin` | Built on Apple Silicon runner via Rosetta, mainly for Intel Macs (2020 and earlier) |
-| macOS | ARM64 | `aarch64-apple-darwin` | Built natively on Apple Silicon runner, mainly for M-series Macs (all new Macs since late 2020) |
-| Android | ARM64 | `aarch64-linux-android` | Cross-compiled on Ubuntu runner with NDK (API 24), mainly for Termux on ARM phones |
-| Android | x86_64 | `x86_64-linux-android` | Cross-compiled on Ubuntu runner with NDK (API 24), mainly for emulators / Chromebooks |
+After the workflow finishes, download the artifact named:
 
-> **Note:** Linux targets (x64 and ARM64) also generate `.deb` and `.rpm` packages in addition to the standalone binary.
+`winload-windows-i686-mingw-no-npcap`
 
-## 📦 Pipeline Stages (Rust)
+The artifact contains:
 
-```
-check ──→ build ──→ release ──→ publish
-  │         │         │           │
-  │         │         │           ├─ Scoop: Download Win binaries
-  │         │         │           │  Generate winload.json → Push to scoop-bucket
-  │         │         │           │
-  │         │         │           ├─ AUR: Download Linux binaries
-  │         │         │           │  Generate PKGBUILD & .SRCINFO → Push to AUR
-  │         │         │           │
-  │         │         │           ├─ npm: Download 6 platform binaries
-  │         │         │           │  Publish platform packages (os/cpu scoped)
-  │         │         │           │  Publish main package (@vincentzyuapps/winload)
-  │         │         │           │  Sync to GitHub Packages (npm.pkg.github.com)
-  │         │         │           │
-  │         │         │           └─ Gitee: Download GitHub Release assets
-  │         │         │              Create Gitee Release via API
-  │         │         │              Upload assets to Gitee
-  │         │         │
-  │         │         └─ Download artifacts
-  │         │            Delete old release/tag
-  │         │            Generate release notes
-  │         │            Create GitHub Release
-  │         │
-  │         └─ Compile for 8 platform targets
-  │            Upload build artifacts
-  │
-  ├─→ sync-gitee-code (parallel with check, every push)
-  │    Mirror all branches/tags to Gitee via hub-mirror-action
-  │
-  ├─→ benchmark (independent, triggered by 'run benchmark')
-  │    Run benchmark_go/benchmark.sh
-  │    Commit & Push docs/benchmark/benchmark.svg
-  │
-  ├─→ publish-crates-io (after build success, parallel with Scoop/AUR/npm)
-  │    cargo publish --allow-dirty
-  │
-  └─→ publish-pypi (independent, no build needed)
-       uv build → uv publish
-```
-
-> **Note:** Release notes are auto-generated and include a download table (all platforms), quick install commands (pip/npm/cargo/scoop/AUR), and a changelog from git commits.
-
-```mermaid
-flowchart TB
-    subgraph check["check"]
-        C1[Parse commit message]
-        C2[Extract version from Cargo.toml]
-    end
-    
-    subgraph syncCode["sync-gitee-code"]
-        SC1[Mirror to Gitee]
-    end
-    
-    subgraph build["build"]
-        B1[Compile 8 platforms]
-        B2[Upload artifacts]
-    end
-    
-    subgraph release["release"]
-        R1[Download artifacts]
-        R2[Delete old release/tag]
-        R3[Generate release notes]
-        R4[Create GitHub Release]
-    end
-    
-    subgraph scoop["publish-scoop"]
-        S1[Download Win binaries]
-        S2[Generate winload.json]
-        S3[Push to scoop-bucket]
-    end
-    
-    subgraph aur["publish-aur-bin"]
-        A1[Download Linux binaries]
-        A2[Generate PKGBUILD & .SRCINFO]
-        A3[Push to AUR]
-    end
-    
-    subgraph npm["publish-npm"]
-        N1[Download 6 platform binaries]
-        N2[Publish platform packages]
-        N3[Publish main package]
-        N4[Sync to GitHub Packages]
-    end
-    
-    subgraph syncRelease["sync-gitee-release"]
-        SR1[Download GitHub Release]
-        SR2[Create Gitee Release]
-        SR3[Upload assets]
-    end
-    
-    subgraph benchmark["benchmark"]
-        BM1[Run benchmark.sh]
-        BM2[Commit & Push SVG]
-    end
-    
-    subgraph crates["publish-crates-io"]
-        CR1[cargo publish]
-    end
-    
-    subgraph pypi["publish-pypi"]
-        PY1[uv build]
-        PY2[uv publish]
-    end
-
-    C1 --> C2
-    C1 -."every push".-> SC1
-    C2 --> B1
-    C2 --"run benchmark"--> BM1
-    C2 --> PY1
-    BM1 --> BM2
-    PY1 --> PY2
-    B1 --> B2
-    B2 --> R1
-    B2 --> CR1
-    R1 --> R2 --> R3 --> R4
-    R4 --> S1
-    S1 --> S2 --> S3
-    R4 --> A1
-    A1 --> A2 --> A3
-    R4 --> N1
-    N1 --> N2 --> N3 --> N4
-    R4 --> SR1
-    SR1 --> SR2 --> SR3
-```
-
-## 🍺 Scoop Publish (Rust)
-
-The `publish` keyword triggers an update to the [scoop-bucket](https://github.com/VincentZyuApps/scoop-bucket) repository:
-
-1. Downloads Windows x64 and ARM64 binaries from the latest GitHub Release
-2. Computes SHA256 hashes
-3. Generates `winload.json` manifest (with both `64bit` and `arm64` architecture support)
-4. Pushes to `VincentZyuApps/scoop-bucket`
-
-## 🐧 AUR Publish (Rust)
-
-The `publish` keyword also triggers an update to the AUR package [winload-rust-bin](https://aur.archlinux.org/packages/winload-rust-bin):
-
-1. Downloads Linux x64 and ARM64 binaries from the latest GitHub Release
-2. Computes SHA256 hashes
-3. Generates `PKGBUILD` and `.SRCINFO`
-4. Pushes to AUR via SSH
-
-### Prerequisite
-
-A repository secret `AUR_SSH_KEY` must be set in **Settings → Secrets → Actions**, containing the private SSH key for the AUR user.
-
-## 📦 npm Publish (Rust)
-
-The `publish` keyword also triggers publishing to npm as [`@vincentzyuapps/winload`](https://www.npmjs.com/package/@vincentzyuapps/winload):
-
-1. Downloads 6 platform binaries (Win/Linux/macOS × x64/ARM64) from the latest GitHub Release
-2. Publishes 6 platform-specific packages with `os`/`cpu` fields (npm auto-selects the matching one)
-3. Publishes the main `@vincentzyuapps/winload` package with `optionalDependencies`
-4. All versions (including pre-release like `0.1.6-beta.4`) are published as `latest`
-5. Syncs all packages to [GitHub Packages](https://github.com/features/packages) (`npm.pkg.github.com`)
-
-> Uses the [esbuild](https://github.com/evanw/esbuild) / [Biome](https://github.com/biomejs/biome) pattern: each platform has its own scoped package, `optionalDependencies` ensures only the matching binary is downloaded.
-
-> The old unscoped package `winload-rust-bin` has been deprecated. The scoped name `@vincentzyuapps/winload` is required for GitHub Packages compatibility.
-
-### Prerequisite
-
-A repository secret `NPM_TOKEN` must be set in **Settings → Secrets → Actions**, containing an npm Automation token.
-
-> **Note:** GitHub Packages publishing uses `GITHUB_TOKEN` which is automatically provided by GitHub Actions — no additional secret is needed.
-
-## 🐍 PyPI Publish (Python)
-
-The `pypi publish` keyword triggers publishing the Python package to PyPI:
-
-1. Installs `uv` via [astral-sh/setup-uv](https://github.com/astral-sh/setup-uv)
-2. Builds the package using `uv build` in the `py/` directory
-3. Publishes to PyPI using `uv publish`
-
-### Prerequisite
-
-A repository secret `PYPI_TOKEN` must be set in **Settings → Secrets → Actions**, containing a PyPI API token with "Entire account" scope.
-
-## 📦 crates.io Publish (Rust)
-
-The `crates publish` keyword triggers publishing the Rust crate to [crates.io](https://crates.io/crates/winload):
-
-1. Installs Rust stable toolchain
-2. Runs `cargo publish --allow-dirty` to publish to crates.io
-3. Users can install via `cargo install winload`
-
-### Prerequisite
-
-A repository secret `CARGO_REGISTRY_TOKEN` must be set in **Settings → Secrets → Actions**, containing a crates.io API token.
-
-> **Note:** This job runs in parallel with Scoop/AUR/npm after the build completes, ensuring the compiled binary is ready before publishing.
-
-## 🔄 Gitee Sync
-
-Automatically mirrors code and releases to [Gitee](https://gitee.com/vincent-zyu/winload) (Chinese GitHub alternative).
-
-### sync-gitee-code — Code Mirror
-
-Runs **on every push** (parallel with `check` job):
-- Uses [Yikun/hub-mirror-action](https://github.com/Yikun/hub-mirror-action) to mirror all branches, tags, and commits
-- Triggered automatically, no keyword needed
-
-### sync-gitee-release — Release Mirror
-
-Runs **after `release` job succeeds** (parallel with Scoop/AUR/npm):
-1. Downloads all assets from the GitHub Release
-2. Creates a corresponding Release on Gitee via API
-3. Uploads all binary assets to Gitee Release
-
-### Prerequisites
-
-| Secret | Where to get | Purpose |
-|--------|--------------|---------|
-| `GITEE_PRIVATE_KEY` | SSH key pair (see [setup guide](../../docs/dev/commit和release从github同步到gitee捏.md)) | Push code via hub-mirror-action |
-| `GITEE_TOKEN` | [Gitee Personal Access Token](https://gitee.com/profile/personal_access_tokens) | Create Release & upload assets via API |
-
-> **Note:** For detailed setup instructions, see [commit和release从github同步到gitee捏.md](../../docs/dev/commit和release从github同步到gitee捏.md).
-
-## 📌 Version
-
-The version is automatically extracted from `rust/Cargo.toml` (Rust) or `py/pyproject.toml` (Python) and used for:
-- Release tag name (e.g. `v0.1.5`)
-- Artifact filenames (e.g. `winload-windows-x86_64-msvc-npcap-v0.1.5.exe`)
-- Scoop/AUR/npm/PyPI/crates.io manifest version field
-
-> **Note:** The npm package version also comes from `rust/Cargo.toml`. During CI, the `publish-npm` job dynamically injects the version into `package.json` — the `0.0.0` placeholder in the repository is never published.
-
-## ⚙️ Prerequisites Summary
-
-| Secret | Where to get | Purpose |
-|--------|--------------|---------|
-| `SCOOP_BUCKET_TOKEN` | GitHub PAT with `repo` scope | Push to Scoop bucket |
-| `AUR_SSH_KEY` | AUR user SSH private key | Push to AUR |
-| `NPM_TOKEN` | npm Automation token | Publish to npm |
-| `PYPI_TOKEN` | PyPI API token (Scope: "Entire account") | Push to PyPI |
-| `CARGO_REGISTRY_TOKEN` | crates.io API token | Publish to crates.io |
-| `GITEE_PRIVATE_KEY` | SSH private key for Gitee | Mirror code to Gitee |
-| `GITEE_TOKEN` | Gitee Personal Access Token | Create Gitee releases |
+`winload-windows-i686-mingw-no-npcap.exe`
