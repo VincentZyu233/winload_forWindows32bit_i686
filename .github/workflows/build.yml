@@ -147,7 +147,7 @@ jobs:
         shell: pwsh
         run: |
           $version = "${{ needs.check.outputs.version }}"
-          gh release view $version *> $null
+          gh release view $version 2>$null
           if ($LASTEXITCODE -eq 0) {
             gh release delete $version --yes --cleanup-tag | Out-Null
           }
