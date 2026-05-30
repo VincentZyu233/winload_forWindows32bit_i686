@@ -143,8 +143,20 @@ jobs:
           path: dist/winload-windows-i686-mingw-no-npcap.exe
           if-no-files-found: error
 
+  # ── 3. Release: download artifact + GitHub Release ────
+  release:
+    name: Publish GitHub Release
+    needs: [check, build]
+    if: needs.check.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: winload-windows-i686-mingw-no-npcap
+          path: dist
+
       - name: Delete existing GitHub release
-        if: needs.check.outputs.should_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -154,7 +166,6 @@ jobs:
           sleep 3
 
       - name: Create GitHub release
-        if: needs.check.outputs.should_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
