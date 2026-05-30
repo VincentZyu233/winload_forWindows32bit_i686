@@ -111,6 +111,7 @@ jobs:
 
       - name: Build legacy binary
         shell: pwsh
+        working-directory: rust
         run: |
           cargo build --release --locked --no-default-features --target i686-pc-windows-gnu
 
